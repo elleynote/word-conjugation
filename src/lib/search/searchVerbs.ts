@@ -3,7 +3,7 @@ import type { Dialect, Verb } from "../../types/verb";
 import { normalizeSearchQuery } from "./normalize";
 
 function searchableValues(verb: Verb, dialect?: Dialect): string[] {
-  const values = [...verb.english, ...verb.french, ...verb.aliases];
+  const values = [...verb.english, ...verb.russian, ...verb.aliases];
   const dialectEntries = dialect
     ? [verb.dialects[dialect]]
     : Object.values(verb.dialects);
