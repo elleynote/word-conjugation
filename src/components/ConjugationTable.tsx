@@ -4,13 +4,23 @@ import { copyFor } from "@/lib/i18n/copy";
 import { applyTextCase } from "@/lib/presentation/format";
 import { transliterateArmenian } from "@/lib/transliteration/transliterate";
 
-const personLabels: Record<Person, string> = {
-  firstSingular: "1st singular",
-  secondSingular: "2nd singular",
-  thirdSingular: "3rd singular",
-  firstPlural: "1st plural",
-  secondPlural: "2nd plural",
-  thirdPlural: "3rd plural",
+const personLabels: Record<InterfaceLanguage, Record<Person, string>> = {
+  en: {
+    firstSingular: "1st singular",
+    secondSingular: "2nd singular",
+    thirdSingular: "3rd singular",
+    firstPlural: "1st plural",
+    secondPlural: "2nd plural",
+    thirdPlural: "3rd plural",
+  },
+  ru: {
+    firstSingular: "1-е лицо, ед. ч.",
+    secondSingular: "2-е лицо, ед. ч.",
+    thirdSingular: "3-е лицо, ед. ч.",
+    firstPlural: "1-е лицо, мн. ч.",
+    secondPlural: "2-е лицо, мн. ч.",
+    thirdPlural: "3-е лицо, мн. ч.",
+  },
 };
 
 interface ConjugationTableProps {
@@ -67,7 +77,7 @@ export function ConjugationTable({ result, language, showTranscription, textCase
               const form = result.tenses[tense].forms[person];
               return (
                 <div className="mobile-tense-row" key={person}>
-                  <div><strong>{applyTextCase(result.pronouns[person], textCase)}</strong><small>{personLabels[person]}</small></div>
+                  <div><strong>{applyTextCase(result.pronouns[person], textCase)}</strong><small>{personLabels[language][person]}</small></div>
                   <div><Form armenian={form.armenian} transcription={form.transliteration} textCase={textCase} showTranscription={showTranscription} /></div>
                 </div>
               );
