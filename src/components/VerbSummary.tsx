@@ -1,4 +1,4 @@
-import type { Dialect, TextCaseMode, Verb } from "@/types/verb";
+import type { Dialect, InterfaceLanguage, TextCaseMode, Verb } from "@/types/verb";
 import { getVerbMetadata } from "@/lib/metadata/metadata";
 import { applyTextCase } from "@/lib/presentation/format";
 import { transliterateArmenian } from "@/lib/transliteration/transliterate";
@@ -6,6 +6,7 @@ import { transliterateArmenian } from "@/lib/transliteration/transliterate";
 interface VerbSummaryProps {
   verb: Verb;
   dialect: Dialect;
+  language: InterfaceLanguage;
   showTranscription: boolean;
   textCase: TextCaseMode;
 }
@@ -14,11 +15,11 @@ function hasArmenian(value: string) {
   return /[\u0530-\u058F]/u.test(value);
 }
 
-export function VerbSummary({ verb, dialect, showTranscription, textCase }: VerbSummaryProps) {
-  const fields = getVerbMetadata(verb, dialect);
+export function VerbSummary({ verb, dialect, language, showTranscription, textCase }: VerbSummaryProps) {
+  const fields = getVerbMetadata(verb, dialect, language);
 
   return (
-    <section className="metadata-section" aria-label="Verb grammatical information">
+    <section className="metadata-section" aria-label={language === "ru" ? "Грамматическая информация о глаголе" : "Verb grammatical information"}>
       <div className="metadata-table-wrap">
         <table className="metadata-table">
           <thead><tr>{fields.map((field) => <th key={field.key}>{field.label}</th>)}</tr></thead>
