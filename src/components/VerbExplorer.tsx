@@ -18,17 +18,24 @@ import { DialectToggle } from "./DialectToggle";
 import { LanguageToggle } from "./LanguageToggle";
 import { LegacyOptions } from "./LegacyOptions";
 import { PromoPanels } from "./PromoPanels";
-import { SearchBar } from "./SearchBar";
+import { SearchBar, type SearchStatus } from "./SearchBar";
 import { SentenceConjugation } from "./SentenceConjugation";
 import { TextCaseToggle } from "./TextCaseToggle";
 import { VerbSummary } from "./VerbSummary";
 
 const initialVerb = verbs.find((verb) => verb.id === "write") ?? verbs[0];
 
+interface SearchApiResponse {
+  verb: Verb | null;
+  source: "supabase" | "local" | "ai" | null;
+  verified: boolean;
+}
+
 export function VerbExplorer() {
   const [language, setLanguage] = useState<InterfaceLanguage>("en");
   const [dialect, setDialect] = useState<Dialect>("western");
   const [polarity, setPolarity] = useState<Polarity>("affirmative");
+  const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
   const [options, setOptions] = useState<LegacyDisplayOptions>({
     transcription: true,
     probableFuture: false,
@@ -37,36 +44,75 @@ export function VerbExplorer() {
     textCase: "title",
   });
   const [query, setQuery] = useState(initialVerb.dialects.western?.lemma ?? initialVerb.english[0]);
-  const [selectedVerb, setSelectedVerb] = useState<Verb>(initialVerb);
+  const [selectedVerb, setSelectedVerb] = useState<Verb | null>({ ...initialVerb, source: "local", verified: true });
   const inputRef = useRef<HTMLInputElement>(null);
 
   const copy = copyFor(language);
   const suggestions = useMemo(() => searchVerbs(query, dialect), [query, dialect]);
   const stats = useMemo(() => getCorpusStats(verbs), []);
-  const selectedData = selectedVerb.dialects[dialect]!;
+  const selectedData = selectedVerb?.dialects[dialect] ?? null;
   const result = useMemo(
-    () => applyLegacyDisplayOptions(conjugateVerb(selectedVerb, dialect, polarity), selectedData, dialect, options),
+    () => selectedVerb && selectedData
+      ? applyLegacyDisplayOptions(conjugateVerb(selectedVerb, dialect, polarity), selectedData, dialect, options)
+      : null,
     [selectedVerb, selectedData, dialect, polarity, options],
   );
 
   const selectVerb = (verb: Verb) => {
     setSelectedVerb(verb);
     setQuery(verb.dialects[dialect]?.lemma ?? verb.english[0]);
+    setSearchStatus(verb.verified === false || verb.source === "ai" ? "ai" : "idle");
   };
 
-  const submitSearch = () => {
-    const match = suggestions[0];
-    if (match) selectVerb(match);
+  const submitSearch = async () => {
+    const cleanQuery = query.trim();
+    if (!cleanQuery) {
+      setSelectedVerb(null);
+      setSearchStatus("not-found");
+      return;
+    }
+
+    setSearchStatus("loading");
+    try {
+      const response = await fetch(`/api/verbs/search?q=${encodeURIComponent(cleanQuery)}&dialect=${dialect}`, { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json() as SearchApiResponse;
+        if (payload.verb) {
+          selectVerb(payload.verb);
+          return;
+        }
+      }
+
+      if (response.status === 404) {
+        setSelectedVerb(null);
+        setSearchStatus("not-found");
+        return;
+      }
+    } catch (error) {
+      console.error("Server verb search failed; trying local fallback.", error);
+    }
+
+    const local = suggestions[0];
+    if (local) {
+      selectVerb({ ...local, source: "local", verified: true });
+      return;
+    }
+
+    setSelectedVerb(null);
+    setSearchStatus("not-found");
   };
 
   const eraseSearch = () => {
     setQuery("");
+    setSelectedVerb(null);
+    setSearchStatus("idle");
     requestAnimationFrame(() => inputRef.current?.focus());
   };
 
   const updateDialect = (nextDialect: Dialect) => {
     setDialect(nextDialect);
     setPolarity("affirmative");
+    setSearchStatus("idle");
     setOptions((current) => ({
       ...current,
       transcription: true,
@@ -74,14 +120,16 @@ export function VerbExplorer() {
       continuousForm: false,
       mediativeForm: false,
     }));
-    const active = selectedVerb.dialects[nextDialect];
-    if (active) {
+
+    const active = selectedVerb?.dialects[nextDialect];
+    if (selectedVerb && active) {
       setQuery(active.lemma);
       return;
     }
+
     const fallback = searchVerbs(query, nextDialect)[0] ?? verbs.find((verb) => verb.dialects[nextDialect]);
     if (fallback) {
-      setSelectedVerb(fallback);
+      setSelectedVerb({ ...fallback, source: "local", verified: true });
       setQuery(fallback.dialects[nextDialect]?.lemma ?? fallback.english[0]);
     }
   };
@@ -148,24 +196,32 @@ export function VerbExplorer() {
             dialect={dialect}
             language={language}
             selectedVerb={selectedVerb}
+            status={searchStatus}
             inputRef={inputRef}
-            onQueryChange={setQuery}
+            onQueryChange={(value) => {
+              setQuery(value);
+              if (searchStatus !== "idle") setSearchStatus("idle");
+            }}
             onSubmit={submitSearch}
             onErase={eraseSearch}
           />
         </section>
 
-        <VerbSummary verb={selectedVerb} dialect={dialect} showTranscription={options.transcription} textCase={options.textCase} />
+        {selectedVerb && selectedData && result && (
+          <>
+            <VerbSummary verb={selectedVerb} dialect={dialect} showTranscription={options.transcription} textCase={options.textCase} />
 
-        <SentenceConjugation verb={selectedVerb} dialect={dialect} language={language} options={options} />
+            <SentenceConjugation verb={selectedVerb} dialect={dialect} language={language} options={options} />
 
-        <section className="conjugation-section">
-          <div className="polarity-tabs" role="tablist" aria-label="Conjugation polarity">
-            <button role="tab" aria-selected={polarity === "affirmative"} className={polarity === "affirmative" ? "is-active" : ""} onClick={() => setPolarity("affirmative")}>{copy.affirmative}</button>
-            <button role="tab" aria-selected={polarity === "negative"} className={polarity === "negative" ? "is-active" : ""} onClick={() => setPolarity("negative")}>{copy.negative}</button>
-          </div>
-          <ConjugationTable result={result} language={language} showTranscription={options.transcription} textCase={options.textCase} />
-        </section>
+            <section className="conjugation-section">
+              <div className="polarity-tabs" role="tablist" aria-label="Conjugation polarity">
+                <button role="tab" aria-selected={polarity === "affirmative"} className={polarity === "affirmative" ? "is-active" : ""} onClick={() => setPolarity("affirmative")}>{copy.affirmative}</button>
+                <button role="tab" aria-selected={polarity === "negative"} className={polarity === "negative" ? "is-active" : ""} onClick={() => setPolarity("negative")}>{copy.negative}</button>
+              </div>
+              <ConjugationTable result={result} language={language} showTranscription={options.transcription} textCase={options.textCase} />
+            </section>
+          </>
+        )}
 
         <PromoPanels language={language} />
       </main>
