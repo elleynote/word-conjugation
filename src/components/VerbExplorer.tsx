@@ -209,7 +209,7 @@ export function VerbExplorer() {
 
         {selectedVerb && selectedData && result && (
           <>
-            <VerbSummary verb={selectedVerb} dialect={dialect} showTranscription={options.transcription} textCase={options.textCase} />
+            <VerbSummary verb={selectedVerb} dialect={dialect} language={language} showTranscription={options.transcription} textCase={options.textCase} />
 
             <SentenceConjugation verb={selectedVerb} dialect={dialect} language={language} options={options} />
 
