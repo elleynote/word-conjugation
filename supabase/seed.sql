@@ -10,6 +10,8 @@ insert into public.verb_translations (verb_id, language_code, value, is_primary)
   ('be','en','be',true), ('be','ru','быть',true)
 on conflict (verb_id, language_code, value) do update set is_primary = excluded.is_primary;
 
+-- Starter rows are Eastern-only. Western Armenian is sourced from the pinned
+-- ArmenianVerbs corpus imported by scripts/import-western-source.mjs.
 insert into public.verb_dialects (
   verb_id, dialect, lemma, transliteration, conjugation_group, root, conjugation_class, is_irregular,
   base, particule, present_participle, perfect_participle, past_participle, mediative_participle,
@@ -21,16 +23,10 @@ insert into public.verb_dialects (
    '{"firstSingular":"գրելու եմ","secondSingular":"գրելու ես","thirdSingular":"գրելու է","firstPlural":"գրելու ենք","secondPlural":"գրելու եք","thirdPlural":"գրելու են"}'::jsonb,
    '{"firstSingular":"գրում եմ","secondSingular":"գրում ես","thirdSingular":"գրում է","firstPlural":"գրում ենք","secondPlural":"գրում եք","thirdPlural":"գրում են"}'::jsonb,
    '{"firstSingular":"գրելով եմ","secondSingular":"գրելով ես","thirdSingular":"գրելով է","firstPlural":"գրելով ենք","secondPlural":"գրելով եք","thirdPlural":"գրելով են"}'::jsonb),
-  ('write','western','գրել','krel','-ել','գր','el',false,
-   'գրել','գրելով',null,'գրած','գրած','գրելով','գրելիք','գրեր','գրելով','գրող','գրէ՛','գրեցէ՛ք','{}'::jsonb,'{}'::jsonb,'{}'::jsonb),
   ('read','eastern','կարդալ','kardal','-ալ','կարդ','al',false,
    'կարդալ','կարդում','կարդում','կարդացել','կարդացել',null,'կարդալու','կարդա','կարդում',null,'կարդա՛','կարդացե՛ք','{}'::jsonb,'{}'::jsonb,'{}'::jsonb),
-  ('read','western','կարդալ','gartal','-ալ','կարդ','al',false,
-   'կարդալ',null,null,'կարդացած','կարդացած',null,null,'կարդար',null,null,'կարդա՛','կարդացէ՛ք','{}'::jsonb,'{}'::jsonb,'{}'::jsonb),
   ('be','eastern','լինել','linel','irregular','լին','irregular',true,
-   'լինել','լինում','լինում','եղել','եղել',null,'լինելու','լինի','լինում',null,'եղի՛ր','եղե՛ք','{}'::jsonb,'{}'::jsonb,'{}'::jsonb),
-  ('be','western','ըլլալ','ellal','irregular','ըլլ','irregular',true,
-   'ըլլալ',null,null,'եղած','եղած',null,null,'ըլլար',null,null,'եղի՛ր','եղէ՛ք','{}'::jsonb,'{}'::jsonb,'{}'::jsonb)
+   'լինել','լինում','լինում','եղել','եղել',null,'լինելու','լինի','լինում',null,'եղի՛ր','եղե՛ք','{}'::jsonb,'{}'::jsonb,'{}'::jsonb)
 on conflict (verb_id, dialect) do update set
   lemma = excluded.lemma,
   transliteration = excluded.transliteration,
@@ -60,11 +56,5 @@ insert into public.irregular_overrides (verb_id, dialect, polarity, tense, perso
   ('be','eastern','affirmative','present','thirdSingular','է'),
   ('be','eastern','affirmative','present','firstPlural','ենք'),
   ('be','eastern','affirmative','present','secondPlural','եք'),
-  ('be','eastern','affirmative','present','thirdPlural','են'),
-  ('be','western','affirmative','present','firstSingular','եմ'),
-  ('be','western','affirmative','present','secondSingular','ես'),
-  ('be','western','affirmative','present','thirdSingular','է'),
-  ('be','western','affirmative','present','firstPlural','ենք'),
-  ('be','western','affirmative','present','secondPlural','էք'),
-  ('be','western','affirmative','present','thirdPlural','են')
+  ('be','eastern','affirmative','present','thirdPlural','են')
 on conflict (verb_id, dialect, polarity, tense, person) do update set value = excluded.value;
