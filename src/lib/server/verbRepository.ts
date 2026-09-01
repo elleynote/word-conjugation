@@ -2,6 +2,7 @@ import { searchVerbs } from "@/lib/search/searchVerbs";
 import { normalizeSearchQuery } from "@/lib/search/normalize";
 import type { Dialect, DialectVerbData, IrregularOverrides, Person, Polarity, Tense, Verb } from "@/types/verb";
 import { hasSupabaseReadConfig, hasSupabaseServiceConfig, supabaseRest } from "./supabaseRest";
+import { verifiedFormsToOverrides } from "./verifiedForms";
 
 type TranslationRow = { language_code: "en" | "ru"; value: string; is_primary: boolean };
 type DialectRow = {
@@ -27,6 +28,7 @@ type DialectRow = {
   probable_future: Partial<Record<Person, string>> | null;
   continuous_forms: Partial<Record<Person, string>> | null;
   mediative_forms: Partial<Record<Person, string>> | null;
+  verified_forms: unknown;
 };
 
 type OverrideRow = {
@@ -38,20 +40,36 @@ type OverrideRow = {
 };
 
 type VerbRow = { id: string; aliases: string[] };
-
 type CandidateIdRow = { verb_id: string };
 
 function queryToken(value: string): string {
   return normalizeSearchQuery(value).replace(/[,*()]/gu, " ").trim();
 }
 
-function dialectDataFromRow(row: DialectRow, overrides: OverrideRow[]): DialectVerbData {
-  const irregularOverrides: IrregularOverrides = {};
-  for (const override of overrides.filter((item) => item.dialect === row.dialect)) {
-    irregularOverrides[override.polarity] ??= {};
-    irregularOverrides[override.polarity]![override.tense] ??= {};
-    irregularOverrides[override.polarity]![override.tense]![override.person] = override.value;
+function mergeOverrides(target: IrregularOverrides, source: IrregularOverrides): IrregularOverrides {
+  for (const [polarityKey, tenseMap] of Object.entries(source)) {
+    const polarity = polarityKey as Polarity;
+    if (!tenseMap) continue;
+    target[polarity] ??= {};
+    for (const [tenseKey, personMap] of Object.entries(tenseMap)) {
+      const tense = tenseKey as Tense;
+      if (!personMap) continue;
+      target[polarity]![tense] ??= {};
+      Object.assign(target[polarity]![tense]!, personMap);
+    }
   }
+  return target;
+}
+
+function dialectDataFromRow(row: DialectRow, overrides: OverrideRow[]): DialectVerbData {
+  const irregularOverrides = verifiedFormsToOverrides(row.verified_forms);
+  const manualOverrides: IrregularOverrides = {};
+  for (const override of overrides.filter((item) => item.dialect === row.dialect)) {
+    manualOverrides[override.polarity] ??= {};
+    manualOverrides[override.polarity]![override.tense] ??= {};
+    manualOverrides[override.polarity]![override.tense]![override.person] = override.value;
+  }
+  mergeOverrides(irregularOverrides, manualOverrides);
 
   return {
     lemma: row.lemma,
