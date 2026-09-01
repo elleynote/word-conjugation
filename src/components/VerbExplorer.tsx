@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { brand } from "@/config/brand";
 import { verbs } from "@/data/verbs";
 import { conjugateVerb } from "@/lib/conjugation/conjugate";
@@ -57,6 +57,10 @@ export function VerbExplorer() {
       : null,
     [selectedVerb, selectedData, dialect, polarity, options],
   );
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   const selectVerb = (verb: Verb) => {
     setSelectedVerb(verb);
@@ -170,7 +174,7 @@ export function VerbExplorer() {
           <div className="hero-emblem" aria-label="TUN Armenian learning">
             <div className="hero-emblem__ornament" aria-hidden="true">Ա · Բ · Գ</div>
             <Image src={brand.logoPath} alt="TUN" width={112} height={80} priority />
-            <span>Armenian learning tools</span>
+            <span>{copy.learningTools}</span>
           </div>
 
           <LanguageToggle value={language} onChange={setLanguage} />
