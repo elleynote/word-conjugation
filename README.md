@@ -1,142 +1,128 @@
 # TUN Armenian Conjugation
 
-A client-owned Armenian verb conjugation application for Western and Eastern Armenian. The public interface follows the layout and typography of the original `ma6.free.fr` conjugator while using TUN identity and a fully independent code/data architecture.
+A client-owned Western and Eastern Armenian conjugation tool for TUN. The application keeps the existing detailed conjugation table and adds a simpler sentence-learning view, English/Russian interface support, responsive mobile controls, a Supabase-first verified corpus, and an optional OpenAI fallback for missing verbs.
 
-## Run it in VS Code
-
-1. Extract the ZIP.
-2. Open the extracted project folder in VS Code.
-3. Open the VS Code terminal.
-4. Run:
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-5. Open `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-No `.env` file is required for the bundled local version.
+The bundled starter corpus works without environment variables, so local development and the existing production site do not depend on Supabase being available.
 
-## Original-layout parity
+## Client revisions implemented
 
-The desktop UI has been rebuilt around the original tool's structure:
+- Armenian keyboard collapsed by default on mobile only; desktop remains expanded.
+- Simple full-sentence conjugation section above the detailed table.
+- Sentence view includes Armenian sentence, Latin transcription and English sentence translation.
+- Independent tense selector: Present, Imperfect, Preterite, Imperative, Present Perfect, Pluperfect, Future and Conditional.
+- Independent Affirmative / Negative selector.
+- Mobile sentence list initially shows a shorter list with Show all / Collapse.
+- Desktop sentence view uses multiple columns.
+- Existing full conjugation table remains underneath.
+- French removed from the public product and replaced with Russian.
+- `EN | RU` changes the full interface language.
+- Search supports Armenian, phonetic Armenian, English and Russian.
+- Western transliteration includes the requested `Yes`, `Toun`, `Touk` forms and `ու -> ou` convention.
+- TUN Translator and TUN Online Armenian School promo panels.
 
-- dialect-colored hero band
-- Armenian title/subtitle on the left
-- TUN-branded decorative panel in the original artwork position
-- EN/FR switch on the right
-- large white conjugation panel overlapping the hero
-- Armenian mini keyboard on the left
-- dialect/options controls in the middle
-- translated-verb counters on the right
-- compact search/help row
-- one-row grammatical metadata table
-- attached Affirmative/Negative tabs
-- full eight-tense conjugation table
-- minimal footer
+## Data architecture
 
-The original developer's artwork/contact details are not bundled. The supplied TUN logo is used instead.
+Priority order:
 
-## Typography
+1. Supabase verified corpus when configured.
+2. Bundled starter corpus fallback.
+3. OpenAI fallback for a missing verb when `OPENAI_API_KEY` is configured.
 
-The interface references the font families identified from the original tool:
+AI results are returned as **unverified** and are stored in `ai_candidates` when the Supabase service-role key is configured. AI candidates never silently become verified production data.
 
-- `Fraunces` 600 for the large title and display serif text
-- `Inter` 400/600/700 for controls and interface text
-- `Noto Serif Armenian` 400/600 for Armenian script
+## Environment variables
 
-They are referenced through Google Fonts with system fallbacks; font files are not bundled in the project.
+Copy `.env.example` to `.env.local` for local server integration:
 
-## Dialect-specific presentation
-
-### Western Armenian
-
-- deep navy theme
-- Transcription
-- Continuous form
-- Mediative form
-- 12-column metadata row including `Particule` and `Mediative.P`
-
-When the optional Western switches are enabled, their stored forms are applied inside the main conjugation table rather than displayed as separate cards.
-
-### Eastern Armenian
-
-- burgundy/red theme
-- Transcription
-- Probable future
-- 10-column metadata row matching the narrower original Eastern layout
-
-When Probable future is enabled, stored probable-future forms are used in the main Future column.
-
-## Included conjugator features
-
-- Western Armenian and Eastern Armenian modes
-- English and French interface switch
-- search by Armenian, English, French, or phonetic/transliterated Armenian
-- English infinitive normalization (`write` and `to write` both work)
-- full on-screen Armenian keyboard
-- Transcription toggle
-- Probable Future toggle where applicable
-- Continuous Form toggle where applicable
-- Mediative Form toggle where applicable
-- `Ab`, `ab`, and `AB` display modes
-- translated-verb counters calculated from the actual bundled corpus
-- legacy grammatical metadata fields
-- Affirmative and Negative conjugation tabs
-- Present, Imperfect, Preterite, Imperative, Present Perfect, Pluperfect, Future, and Conditional
-- horizontally scrollable tables on smaller screens so the original comparison layout remains usable
-
-## TUN branding
-
-Brand and layout values are centralized in:
-
-```text
-src/config/brand.ts
-src/app/globals.css
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+OPENAI_VERB_MODEL=gpt-5.4-mini
 ```
 
-The bundled TUN logo is:
+Do not commit real secrets. `SUPABASE_SERVICE_ROLE_KEY` and `OPENAI_API_KEY` are server-only.
+
+## Supabase setup
+
+A new project can be created when the feature branch is ready for live integration. Apply migrations in order:
 
 ```text
-public/tun-logo.png
+supabase/migrations/202609010001_create_verb_schema.sql
+supabase/migrations/202609020001_client_revisions.sql
 ```
 
-Replace that PNG with another approved TUN logo asset at the same path if needed; no component edits are required.
-
-## Starter corpus and linguistic review
-
-The bundled corpus is a **starter corpus**, not a copy of the original site's private database. It proves the application workflow and contains regular/irregular examples. A qualified Armenian linguist should verify and expand the dataset before a large public launch.
-
-The public interface does not show a developer/starter-corpus notice.
-
-## Project architecture
+Then load:
 
 ```text
-src/
-  app/                 Next.js page, layout and original-style global CSS
-  components/          UI controls, keyboard, metadata and conjugation results
-  config/              TUN brand configuration
-  data/                Bundled starter verb corpus
-  lib/
-    conjugation/        Deterministic conjugation rules
-    corpus/             Live corpus counters
-    i18n/               EN/FR interface text
-    keyboard/           Caret insert/backspace helpers
-    metadata/           Dialect-specific legacy metadata mapping
-    options/            Legacy option application logic
-    presentation/       Dialect UI policy and text formatting
-    search/             Multilingual search/ranking
-    transliteration/    Local Armenian transliteration
-  types/                Shared domain model
-data/                   JSON import example
-scripts/                Corpus import and smoke-check helpers
-supabase/               Optional PostgreSQL schema/seed
+supabase/seed.sql
 ```
 
-## Production verification
+Main tables:
 
-After dependencies are installed:
+- `verbs`
+- `verb_translations` (`en`, `ru`)
+- `verb_dialects`
+- `irregular_overrides`
+- `ai_candidates`
+
+Verified corpus tables are publicly readable through RLS. `ai_candidates` has no public read/write policy and is intended for service-role access only.
+
+## Search API
+
+`GET /api/verbs/search?q=<verb>&dialect=western|eastern`
+
+The server route searches Supabase first, keeps the bundled corpus as a resilience fallback, then optionally calls OpenAI when no verified/local verb exists.
+
+## OpenAI
+
+The OpenAI API key is never sent to the browser. The server uses the Responses API and defaults to the client-requested model:
+
+```text
+gpt-5.4-mini
+```
+
+Override it with `OPENAI_VERB_MODEL` if required later.
+
+Because an API key was previously shared in plain text during project discussion, rotate that key before adding a production `OPENAI_API_KEY` to Netlify.
+
+## Corpus import
+
+The JSON import format now requires:
+
+```text
+id
+english[]
+russian[]
+aliases[]
+dialects
+```
+
+Example:
+
+```text
+data/verbs.example.json
+```
+
+Generate a typed local corpus file with:
+
+```bash
+node scripts/import-verbs.mjs data/verbs.example.json src/data/generated-verbs.ts
+```
+
+## Verification
+
+Before merge/deployment:
 
 ```bash
 npm test
@@ -145,63 +131,14 @@ npm run lint
 npm run build
 ```
 
-Dependency-free checks used by this project are also available through `tsconfig.core.json` and the smoke scripts in `scripts/`.
+## Deployment
 
-## Add or edit verbs directly
+The repo remains Netlify-ready. Add the Supabase/OpenAI environment variables in Netlify only after the new Supabase project has been created and migrated.
 
-Edit:
-
-```text
-src/data/verbs.ts
-```
-
-Each dialect record can include:
+Development branch for this scope:
 
 ```text
-base
-particule
-pastParticiple
-mediativeParticiple
-negativeParticiple
-imperfectNonPersonal
-subjectParticiple
-futureParticiple
-probableFuture
-continuousForms
-mediativeForms
+feature/client-revisions-supabase-ai
 ```
 
-The final three are person-keyed objects used by the original-style option switches.
-
-## Import a JSON corpus
-
-Use the structure in:
-
-```text
-data/verbs.example.json
-```
-
-Run:
-
-```bash
-node scripts/import-verbs.mjs data/verbs.example.json src/data/generated-verbs.ts
-```
-
-The importer validates the core record structure and optional person-form maps before generating a typed TypeScript file.
-
-## Optional Supabase database
-
-Supabase is not required to run the ZIP. The included assets let you move the corpus to PostgreSQL later:
-
-```text
-supabase/migrations/202609010001_create_verb_schema.sql
-supabase/seed.sql
-```
-
-## Netlify
-
-The project remains Netlify-ready. Push it to GitHub, connect the repository in Netlify, and use the included `netlify.toml`.
-
-## Data ownership boundary
-
-This rebuild reproduces the legacy tool's functionality and information architecture while remaining independent. Import only client-owned, public-domain, or appropriately licensed linguistic data for production use.
+Do not merge the feature branch to `main` until the changes have been reviewed and explicitly approved.
