@@ -17,7 +17,9 @@ import { CorpusStats } from "./CorpusStats";
 import { DialectToggle } from "./DialectToggle";
 import { LanguageToggle } from "./LanguageToggle";
 import { LegacyOptions } from "./LegacyOptions";
+import { PromoPanels } from "./PromoPanels";
 import { SearchBar } from "./SearchBar";
+import { SentenceConjugation } from "./SentenceConjugation";
 import { TextCaseToggle } from "./TextCaseToggle";
 import { VerbSummary } from "./VerbSummary";
 
@@ -155,6 +157,8 @@ export function VerbExplorer() {
 
         <VerbSummary verb={selectedVerb} dialect={dialect} showTranscription={options.transcription} textCase={options.textCase} />
 
+        <SentenceConjugation verb={selectedVerb} dialect={dialect} language={language} options={options} />
+
         <section className="conjugation-section">
           <div className="polarity-tabs" role="tablist" aria-label="Conjugation polarity">
             <button role="tab" aria-selected={polarity === "affirmative"} className={polarity === "affirmative" ? "is-active" : ""} onClick={() => setPolarity("affirmative")}>{copy.affirmative}</button>
@@ -163,6 +167,7 @@ export function VerbExplorer() {
           <ConjugationTable result={result} language={language} showTranscription={options.transcription} textCase={options.textCase} />
         </section>
 
+        <PromoPanels language={language} />
       </main>
     </div>
   );
