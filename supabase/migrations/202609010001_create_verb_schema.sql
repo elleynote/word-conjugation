@@ -8,7 +8,7 @@ create table if not exists public.verbs (
 create table if not exists public.verb_translations (
   id bigint generated always as identity primary key,
   verb_id text not null references public.verbs(id) on delete cascade,
-  language_code text not null check (language_code in ('en', 'fr')),
+  language_code text not null check (language_code in ('en', 'ru')),
   value text not null,
   is_primary boolean not null default false,
   unique (verb_id, language_code, value)
