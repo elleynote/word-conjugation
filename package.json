@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "import:western": "node scripts/import-western-source.mjs"
   },
   "dependencies": {
     "next": "16.3.2",
