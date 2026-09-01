@@ -16,7 +16,7 @@ interface ExtraFormsProps {
 
 const localizedLabels = {
   en: { probableFuture: "Probable future", continuous: "Continuous form", mediative: "Mediative form" },
-  fr: { probableFuture: "Futur probable", continuous: "Forme continue", mediative: "Forme médiative" },
+  ru: { probableFuture: "Предполагаемое будущее", continuous: "Продолженная форма", mediative: "Медиативная форма" },
 };
 
 export function ExtraForms({ data, dialect, language, options, textCase }: ExtraFormsProps) {
@@ -25,7 +25,7 @@ export function ExtraForms({ data, dialect, language, options, textCase }: Extra
   const copy = copyFor(language);
   if (!anyExtraOption) return null;
 
-  if (!sections.length) return <div className="extra-empty">{copy.extraEmpty}</div>;
+  if (!sections.length) return <div className="extra-empty">{copy.noResults}</div>;
 
   return (
     <section className="extra-forms" aria-label="Additional conjugation forms">
