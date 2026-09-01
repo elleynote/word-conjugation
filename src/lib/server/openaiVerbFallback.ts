@@ -23,6 +23,7 @@ type CandidateDialect = {
 };
 
 type Candidate = {
+  isVerb: boolean;
   id: string;
   english: string[];
   russian: string[];
@@ -61,9 +62,10 @@ const candidateSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
+    isVerb: { type: "boolean" },
     id: { type: "string" },
-    english: { type: "array", items: { type: "string" }, minItems: 1 },
-    russian: { type: "array", items: { type: "string" }, minItems: 1 },
+    english: { type: "array", items: { type: "string" } },
+    russian: { type: "array", items: { type: "string" } },
     aliases: { type: "array", items: { type: "string" } },
     dialects: {
       type: "object",
@@ -72,7 +74,7 @@ const candidateSchema = {
       required: ["western", "eastern"],
     },
   },
-  required: ["id", "english", "russian", "aliases", "dialects"],
+  required: ["isVerb", "id", "english", "russian", "aliases", "dialects"],
 } as const;
 
 function outputText(response: ResponsesApiPayload): string | null {
@@ -137,7 +139,7 @@ export async function generateVerbCandidate(query: string, dialect: Dialect): Pr
           content: [
             {
               type: "input_text",
-              text: "You are preparing an UNVERIFIED candidate record for an Armenian verb reference. Return Western and Eastern Armenian linguistic data only when the input is genuinely a verb or clearly refers to one. Prefer standard Armenian spellings. The data will be reviewed by a human before it becomes verified. Do not invent citations or claim verification.",
+              text: "You are preparing an UNVERIFIED candidate record for an Armenian verb reference. First determine whether the input is genuinely a verb or clearly refers to one. If it is not a verb (for example a greeting such as hello), set isVerb=false and return empty strings/arrays for the linguistic fields. If it is a verb, set isVerb=true and return Western and Eastern Armenian linguistic data. Prefer standard Armenian spellings. The data will be reviewed by a human before it becomes verified. Do not invent citations or claim verification.",
             },
           ],
         },
@@ -146,7 +148,7 @@ export async function generateVerbCandidate(query: string, dialect: Dialect): Pr
           content: [
             {
               type: "input_text",
-              text: `User query: ${query}\nRequested display dialect: ${dialect}\nReturn the normalized English and Russian infinitive translations plus Western and Eastern Armenian verb data.`,
+              text: `User query: ${query}\nRequested display dialect: ${dialect}\nIf this is a verb, return normalized English and Russian infinitive translations plus Western and Eastern Armenian verb data.`,
             },
           ],
         },
@@ -173,6 +175,7 @@ export async function generateVerbCandidate(query: string, dialect: Dialect): Pr
   if (!text) return null;
 
   const candidate = JSON.parse(text) as Candidate;
+  if (!candidate.isVerb) return null;
   if (!candidate.english?.length || !candidate.russian?.length || !candidate.dialects?.western || !candidate.dialects?.eastern) {
     return null;
   }
