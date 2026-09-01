@@ -5,9 +5,9 @@ insert into public.verbs (id, aliases) values
 on conflict (id) do update set aliases = excluded.aliases, updated_at = now();
 
 insert into public.verb_translations (verb_id, language_code, value, is_primary) values
-  ('write','en','write',true), ('write','fr','écrire',true),
-  ('read','en','read',true), ('read','fr','lire',true),
-  ('be','en','be',true), ('be','fr','être',true)
+  ('write','en','write',true), ('write','ru','писать',true),
+  ('read','en','read',true), ('read','ru','читать',true),
+  ('be','en','be',true), ('be','ru','быть',true)
 on conflict (verb_id, language_code, value) do update set is_primary = excluded.is_primary;
 
 insert into public.verb_dialects (
