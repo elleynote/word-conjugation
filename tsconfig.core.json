@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": ".core-build"
+  },
+  "include": [
+    "src/types/**/*.ts",
+    "src/data/**/*.ts",
+    "src/lib/search/normalize.ts",
+    "src/lib/search/searchVerbs.ts",
+    "src/lib/transliteration/transliterate.ts",
+    "src/lib/conjugation/rules.ts",
+    "src/lib/conjugation/conjugate.ts",
+    "src/lib/keyboard/insertAtSelection.ts",
+    "src/lib/options/displayOptions.ts",
+    "src/lib/options/applyLegacyDisplayOptions.ts",
+    "src/lib/i18n/copy.ts",
+    "src/lib/corpus/stats.ts",
+    "src/lib/metadata/metadata.ts",
+    "src/lib/presentation/format.ts",
+    "src/lib/presentation/dialectPresentation.ts"
+  ]
+}

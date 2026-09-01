@@ -1,0 +1,75 @@
+[
+  {
+    "id": "write",
+    "english": ["write"],
+    "french": ["écrire"],
+    "aliases": ["writing", "grel"],
+    "dialects": {
+      "eastern": {
+        "lemma": "գրել",
+        "transliteration": "grel",
+        "group": "-ել",
+        "root": "գր",
+        "class": "el",
+        "isIrregular": false,
+        "participles": {
+          "present": "գրում",
+          "perfect": "գրել",
+          "future": "գրելու",
+          "negative": "գրի"
+        },
+        "base": "գրել",
+        "particule": "գրում",
+        "pastParticiple": "գրել",
+        "mediativeParticiple": "գրելով",
+        "negativeParticiple": "գրի",
+        "imperfectNonPersonal": "գրում",
+        "subjectParticiple": "գրող",
+        "futureParticiple": "գրելու",
+        "probableFuture": {
+          "firstSingular": "գրելու եմ",
+          "secondSingular": "գրելու ես",
+          "thirdSingular": "գրելու է",
+          "firstPlural": "գրելու ենք",
+          "secondPlural": "գրելու եք",
+          "thirdPlural": "գրելու են"
+        },
+        "continuousForms": {
+          "firstSingular": "գրում եմ",
+          "secondSingular": "գրում ես",
+          "thirdSingular": "գրում է",
+          "firstPlural": "գրում ենք",
+          "secondPlural": "գրում եք",
+          "thirdPlural": "գրում են"
+        },
+        "mediativeForms": {
+          "firstSingular": "գրելով եմ",
+          "secondSingular": "գրելով ես",
+          "thirdSingular": "գրելով է",
+          "firstPlural": "գրելով ենք",
+          "secondPlural": "գրելով եք",
+          "thirdPlural": "գրելով են"
+        },
+        "imperative": { "singular": "գրի՛ր", "plural": "գրե՛ք" }
+      },
+      "western": {
+        "lemma": "գրել",
+        "transliteration": "krel",
+        "group": "-ել",
+        "root": "գր",
+        "class": "el",
+        "isIrregular": false,
+        "participles": { "perfect": "գրած", "negative": "գրեր" },
+        "base": "գրել",
+        "particule": "գրելով",
+        "pastParticiple": "գրած",
+        "mediativeParticiple": "գրելով",
+        "negativeParticiple": "գրեր",
+        "imperfectNonPersonal": "գրելով",
+        "subjectParticiple": "գրող",
+        "futureParticiple": "գրելիք",
+        "imperative": { "singular": "գրէ՛", "plural": "գրեցէ՛ք" }
+      }
+    }
+  }
+]
