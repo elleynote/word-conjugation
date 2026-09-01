@@ -19,8 +19,8 @@ function validatePersonForms(value, path) {
 }
 
 for (const [index, verb] of source.entries()) {
-  if (!verb?.id || !Array.isArray(verb.english) || !Array.isArray(verb.french) || !Array.isArray(verb.aliases) || !verb.dialects) {
-    throw new Error(`Invalid verb at index ${index}: id, english[], french[], aliases[] and dialects are required.`);
+  if (!verb?.id || !Array.isArray(verb.english) || !Array.isArray(verb.russian) || !Array.isArray(verb.aliases) || !verb.dialects) {
+    throw new Error(`Invalid verb at index ${index}: id, english[], russian[], aliases[] and dialects are required.`);
   }
 
   for (const dialect of dialectNames) {
