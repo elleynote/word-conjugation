@@ -8,6 +8,8 @@ import { getVerbMetadata } from "../src/lib/metadata/metadata";
 import { backspaceAtSelection } from "../src/lib/keyboard/insertAtSelection";
 import { applyTextCase, visibleTranscription } from "../src/lib/presentation/format";
 import { getDialectPresentation } from "../src/lib/presentation/dialectPresentation";
+import { transliterateArmenian } from "../src/lib/transliteration/transliterate";
+import { englishSentenceFor } from "../src/lib/sentences/englishSentence";
 
 const write = verbs.find((verb) => verb.id === "write");
 function expect(condition: unknown, message: string): asserts condition {
@@ -32,12 +34,13 @@ expect(western, "write must have western data");
 const westernMediative = applyLegacyDisplayOptions(conjugateVerb(write, "western", "affirmative"), western, "western", { transcription: true, probableFuture: false, continuousForm: false, mediativeForm: true, textCase: "title" });
 equal(westernMediative.tenses.presentPerfect.forms.firstSingular.armenian, western.mediativeForms?.firstSingular);
 
-equal(copyFor("fr").searchButton, "OK");
-equal(localizedVerbTranslation(write, "fr"), "écrire");
+equal(copyFor("ru").searchButton, "ОК");
+equal(localizedVerbTranslation(write, "ru"), "писать");
 
 const stats = getCorpusStats(verbs);
 expect(stats.western > 0 && stats.eastern > 0, "dialect stats are derived from corpus");
 expect(stats.english >= verbs.length, "english stats count actual bundled translations");
+expect(stats.russian >= verbs.length, "russian stats count actual bundled translations");
 
 const metadata = getVerbMetadata(write, "eastern");
 equal(metadata.length, 10);
@@ -49,6 +52,7 @@ const westernMetadata = getVerbMetadata(write, "western");
 equal(westernMetadata.length, 12);
 equal(westernMetadata[5].label, "Particule");
 equal(westernMetadata[7].label, "Mediative.P");
+equal(getVerbMetadata(write, "western", "ru")[0].label, "Глагол");
 
 deepEqual(backspaceAtSelection("գրել", 2, 2), { value: "գել", caret: 1 });
 deepEqual(backspaceAtSelection("գրել", 1, 3), { value: "գլ", caret: 1 });
@@ -57,6 +61,16 @@ equal(applyTextCase("գրել", "upper"), "ԳՐԵԼ");
 equal(applyTextCase("ԳՐԵԼ", "lower"), "գրել");
 equal(visibleTranscription("grel", false), "");
 equal(visibleTranscription("grel", true), "grel");
+
+equal(transliterateArmenian("ես", "western"), "Yes");
+equal(transliterateArmenian("դուն", "western"), "Toun");
+equal(transliterateArmenian("դուք", "western"), "Touk");
+expect(transliterateArmenian("սիրում", "western").includes("ou"), "ու is rendered as ou");
+
+equal(englishSentenceFor("love", "present", "affirmative", "firstSingular"), "I love");
+equal(englishSentenceFor("love", "present", "affirmative", "thirdSingular"), "He/She loves");
+equal(englishSentenceFor("go", "preterite", "affirmative", "firstSingular"), "I went");
+equal(englishSentenceFor("write", "future", "negative", "thirdPlural"), "They will not write");
 
 equal(getVisibleExtraSections(eastern, {
   transcription: true,
