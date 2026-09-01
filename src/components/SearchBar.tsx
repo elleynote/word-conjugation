@@ -4,29 +4,33 @@ import type { RefObject } from "react";
 import type { Dialect, InterfaceLanguage, Verb } from "@/types/verb";
 import { copyFor, localizedVerbTranslation } from "@/lib/i18n/copy";
 
+export type SearchStatus = "idle" | "loading" | "not-found" | "ai";
+
 interface SearchBarProps {
   query: string;
   dialect: Dialect;
   language: InterfaceLanguage;
-  selectedVerb: Verb;
+  selectedVerb: Verb | null;
+  status: SearchStatus;
   inputRef: RefObject<HTMLInputElement | null>;
   onQueryChange: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: () => void | Promise<void>;
   onErase: () => void;
 }
 
 function originalHelpText(dialect: Dialect, language: InterfaceLanguage) {
-  const side = dialect === "western" ? (language === "fr" ? "arménien occidental" : "western armenian") : (language === "fr" ? "arménien oriental" : "eastern armenian");
-  if (language === "fr") {
-    return `Écrivez ci-dessous un verbe en ${side} (ex : սիրել), en arménien phonétique (ex : sirel) ou en français (ex : être).`;
+  if (language === "ru") {
+    const side = dialect === "western" ? "западноармянском" : "восточноармянском";
+    return `Введите глагол на ${side} (например: սիրել), фонетическом армянском (sirel), английском или русском (например: любить).`;
   }
-  return `Write below a verb in ${side} (eg: սիրել), in phonetic armenian (eg: sirel) or in english (eg: to be).`;
+  const side = dialect === "western" ? "western armenian" : "eastern armenian";
+  return `Write below a verb in ${side} (eg: սիրել), in phonetic armenian (eg: sirel), english (eg: to be) or russian (eg: любить).`;
 }
 
-export function SearchBar({ query, dialect, language, selectedVerb, inputRef, onQueryChange, onSubmit, onErase }: SearchBarProps) {
+export function SearchBar({ query, dialect, language, selectedVerb, status, inputRef, onQueryChange, onSubmit, onErase }: SearchBarProps) {
   const copy = copyFor(language);
-  const selectedData = selectedVerb.dialects[dialect];
-  const translation = localizedVerbTranslation(selectedVerb, language);
+  const selectedData = selectedVerb?.dialects[dialect];
+  const translation = selectedVerb ? localizedVerbTranslation(selectedVerb, language) : "";
 
   return (
     <section className="search-section">
@@ -40,7 +44,7 @@ export function SearchBar({ query, dialect, language, selectedVerb, inputRef, on
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
-                onSubmit();
+                void onSubmit();
               }
             }}
             placeholder={copy.searchPlaceholder}
@@ -49,15 +53,21 @@ export function SearchBar({ query, dialect, language, selectedVerb, inputRef, on
           />
           {query && <button type="button" className="input-clear" aria-label={copy.erase} onClick={onErase}>×</button>}
         </div>
-        <button type="button" className="btn btn-primary" onClick={onSubmit}>{copy.searchButton}</button>
+        <button type="button" className="btn btn-primary" onClick={() => void onSubmit()} disabled={status === "loading"}>{status === "loading" ? "…" : copy.searchButton}</button>
         <button type="button" className="btn btn-secondary" onClick={onErase}>{copy.erase}</button>
-        {selectedData && (
+        {selectedData && selectedVerb && (
           <div className="selected-verb" aria-live="polite">
             <strong>{selectedData.lemma}</strong>
             <span>•</span>
             <span>{language === "en" ? `to ${translation}` : translation}</span>
           </div>
         )}
+      </div>
+
+      <div className="search-feedback" aria-live="polite">
+        {status === "loading" && <span>{language === "ru" ? "Поиск…" : "Searching…"}</span>}
+        {status === "not-found" && <span>{copy.noResults}</span>}
+        {status === "ai" && <span className="search-feedback--warning">{copy.unverifiedAi}</span>}
       </div>
     </section>
   );
