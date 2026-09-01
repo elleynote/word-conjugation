@@ -27,6 +27,7 @@ const dictionary = {
   en: {
     title: "Armenian Conjugation",
     subtitle: "Conjugate Western and Eastern Armenian verbs",
+    learningTools: "Armenian learning tools",
     keyboard: "Armenian keyboard",
     showKeyboard: "Show Armenian keyboard",
     hideKeyboard: "Hide Armenian keyboard",
@@ -65,6 +66,7 @@ const dictionary = {
   ru: {
     title: "Спряжение армянских глаголов",
     subtitle: "Спрягайте глаголы западноармянского и восточноармянского языков",
+    learningTools: "Инструменты для изучения армянского",
     keyboard: "Армянская клавиатура",
     showKeyboard: "Показать армянскую клавиатуру",
     hideKeyboard: "Скрыть армянскую клавиатуру",
