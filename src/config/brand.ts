@@ -19,4 +19,8 @@ export const brand = {
     surface: "#FFFFFF",
     border: "#E2D5B8",
   },
+  promos: {
+    translatorUrl: "https://translatearmenian.com/",
+    schoolUrl: "https://tunapp.com/",
+  },
 } as const;
