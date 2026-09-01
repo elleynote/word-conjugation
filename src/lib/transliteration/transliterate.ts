@@ -18,9 +18,37 @@ const westernOverrides: Record<string, string> = {
   ջ: "ch", Ջ: "Ch", պ: "b", Պ: "B", կ: "g", Կ: "G", տ: "d", Տ: "D",
 };
 
+const WESTERN_WORD_OVERRIDES: Record<string, string> = {
+  "ես": "Yes",
+  "դուն": "Toun",
+  "դուք": "Touk",
+};
+
+const OU_LOWER = "\uE000";
+const OU_TITLE = "\uE001";
+
+function transliterateToken(token: string, dialect: Dialect): string {
+  if (dialect === "western" && WESTERN_WORD_OVERRIDES[token]) {
+    return WESTERN_WORD_OVERRIDES[token];
+  }
+
+  const withDigraphs = token
+    .replace(/Ու/g, OU_TITLE)
+    .replace(/ու/g, OU_LOWER);
+
+  return Array.from(withDigraphs)
+    .map((character) => {
+      if (character === OU_LOWER) return "ou";
+      if (character === OU_TITLE) return "Ou";
+      return (dialect === "western" ? westernOverrides[character] : undefined) ?? commonMap[character] ?? character;
+    })
+    .join("");
+}
+
 export function transliterateArmenian(value: string, dialect: Dialect): string {
-  return Array.from(value)
-    .map((character) => (dialect === "western" ? westernOverrides[character] : undefined) ?? commonMap[character] ?? character)
+  return value
+    .split(/(\s+)/)
+    .map((part) => (/^\s+$/u.test(part) ? part : transliterateToken(part, dialect)))
     .join("")
     .replace(/\s+/g, " ")
     .trim();
