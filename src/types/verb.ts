@@ -1,7 +1,7 @@
 export const DIALECTS = ["western", "eastern"] as const;
 export type Dialect = (typeof DIALECTS)[number];
 
-export const INTERFACE_LANGUAGES = ["en", "fr"] as const;
+export const INTERFACE_LANGUAGES = ["en", "ru"] as const;
 export type InterfaceLanguage = (typeof INTERFACE_LANGUAGES)[number];
 
 export const TEXT_CASE_MODES = ["title", "lower", "upper"] as const;
@@ -33,6 +33,7 @@ export const TENSES = [
 export type Tense = (typeof TENSES)[number];
 
 export type VerbClass = "el" | "al" | "irregular";
+export type ResultSource = "supabase" | "local" | "ai";
 
 export interface VerbParticiples {
   present?: string;
@@ -78,9 +79,13 @@ export interface DialectVerbData {
 export interface Verb {
   id: string;
   english: string[];
-  french: string[];
+  russian: string[];
+  /** Legacy import compatibility only. French is no longer exposed in the UI. */
+  french?: string[];
   aliases: string[];
   dialects: Partial<Record<Dialect, DialectVerbData>>;
+  source?: ResultSource;
+  verified?: boolean;
 }
 
 export interface LegacyDisplayOptions {
