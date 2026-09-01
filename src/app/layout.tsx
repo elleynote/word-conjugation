@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import type { Metadata } from "next";
 import { brand } from "@/config/brand";
 import "./globals.css";
+import "./client-revisions.css";
 
 export const metadata: Metadata = {
   title: `${brand.appName} — Western & Eastern Armenian verbs`,
