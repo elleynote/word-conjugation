@@ -46,6 +46,11 @@ type OverrideRow = {
 
 type VerbRow = { id: string; aliases: string[] };
 type CandidateIdRow = { verb_id: string };
+type EmbeddedVerbRow = VerbRow & {
+  verb_translations: TranslationRow[];
+  verb_dialects: DialectRow[];
+  irregular_overrides: OverrideRow[];
+};
 
 function queryToken(value: string): string {
   return normalizeSearchQuery(value).replace(/[,*()]/gu, " ").trim();
@@ -112,17 +117,13 @@ function dialectDataFromRow(row: DialectRow, overrides: OverrideRow[]): DialectV
   };
 }
 
-async function fetchVerbById(id: string): Promise<Verb | null> {
-  const encodedId = encodeURIComponent(id);
-  const [verbRows, translations, dialectRows, overrides] = await Promise.all([
-    supabaseRest<VerbRow[]>(`verbs?id=eq.${encodedId}&select=id,aliases&limit=1`),
-    supabaseRest<TranslationRow[]>(`verb_translations?verb_id=eq.${encodedId}&select=language_code,value,is_primary&order=is_primary.desc`),
-    supabaseRest<DialectRow[]>(`verb_dialects?verb_id=eq.${encodedId}&select=*`),
-    supabaseRest<OverrideRow[]>(`irregular_overrides?verb_id=eq.${encodedId}&select=dialect,polarity,tense,person,value`),
-  ]);
-
-  const row = verbRows[0];
-  if (!row || !dialectRows.length) return null;
+function verbFromRows(
+  row: VerbRow,
+  translations: TranslationRow[],
+  dialectRows: DialectRow[],
+  overrides: OverrideRow[],
+): Verb | null {
+  if (!dialectRows.length) return null;
 
   const dialects: Verb["dialects"] = {};
   for (const dialectRow of dialectRows) {
@@ -138,6 +139,23 @@ async function fetchVerbById(id: string): Promise<Verb | null> {
     source: "supabase",
     verified: true,
   };
+}
+
+async function fetchVerbById(id: string): Promise<Verb | null> {
+  const encodedId = encodeURIComponent(id);
+  const select = encodeURIComponent(
+    "id,aliases,verb_translations(language_code,value,is_primary),verb_dialects(*),irregular_overrides(dialect,polarity,tense,person,value)",
+  );
+  const rows = await supabaseRest<EmbeddedVerbRow[]>(`verbs?id=eq.${encodedId}&select=${select}&limit=1`);
+  const row = rows[0];
+  if (!row) return null;
+
+  return verbFromRows(
+    row,
+    row.verb_translations ?? [],
+    row.verb_dialects ?? [],
+    row.irregular_overrides ?? [],
+  );
 }
 
 async function searchSupabase(query: string, dialect: Dialect): Promise<Verb | null> {
