@@ -7,20 +7,18 @@ import { verbs } from "@/data/verbs";
 import { conjugateVerb } from "@/lib/conjugation/conjugate";
 import { backspaceAtSelection, insertAtSelection } from "@/lib/keyboard/insertAtSelection";
 import { searchVerbs } from "@/lib/search/searchVerbs";
-import { getCorpusStats } from "@/lib/corpus/stats";
 import { copyFor } from "@/lib/i18n/copy";
 import { applyLegacyDisplayOptions } from "@/lib/options/applyLegacyDisplayOptions";
-import type { Dialect, InterfaceLanguage, LegacyDisplayOptions, Polarity, Verb } from "@/types/verb";
-import { ArmenianKeyboard } from "./ArmenianKeyboard";
-import { ConjugationTable } from "./ConjugationTable";
-import { CorpusStats } from "./CorpusStats";
-import { DialectToggle } from "./DialectToggle";
+import { RECENT_VERBS_STORAGE_KEY, pushRecentVerb, type RecentVerbEntry } from "@/lib/recent/recentVerbs";
+import type { ConjugatorView } from "@/lib/presentation/conjugatorTabs";
+import type { Dialect, InterfaceLanguage, LegacyDisplayOptions, Verb } from "@/types/verb";
+import { ConjugatorSidebar } from "./ConjugatorSidebar";
 import { LanguageToggle } from "./LanguageToggle";
-import { LegacyOptions } from "./LegacyOptions";
 import { PromoPanels } from "./PromoPanels";
-import { SearchBar, type SearchStatus } from "./SearchBar";
+import { type SearchStatus } from "./SearchBar";
 import { SentenceConjugation } from "./SentenceConjugation";
-import { TextCaseToggle } from "./TextCaseToggle";
+import { TenseComparison } from "./TenseComparison";
+import { TenseTabs } from "./TenseTabs";
 import { VerbSummary } from "./VerbSummary";
 
 const initialVerb = verbs.find((verb) => verb.id === "write") ?? verbs[0];
@@ -31,11 +29,25 @@ interface SearchApiResponse {
   verified: boolean;
 }
 
+function loadRecentVerbs(): RecentVerbEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_VERBS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as RecentVerbEntry[];
+    return Array.isArray(parsed) ? parsed.slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function VerbExplorer() {
   const [language, setLanguage] = useState<InterfaceLanguage>("en");
   const [dialect, setDialect] = useState<Dialect>("western");
-  const [polarity, setPolarity] = useState<Polarity>("affirmative");
+  const [activeView, setActiveView] = useState<ConjugatorView>("present");
   const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [recentVerbs, setRecentVerbs] = useState<RecentVerbEntry[]>(loadRecentVerbs);
   const [options, setOptions] = useState<LegacyDisplayOptions>({
     transcription: true,
     probableFuture: false,
@@ -48,28 +60,45 @@ export function VerbExplorer() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const copy = copyFor(language);
-  const suggestions = useMemo(() => searchVerbs(query, dialect), [query, dialect]);
-  const stats = useMemo(() => getCorpusStats(verbs), []);
   const selectedData = selectedVerb?.dialects[dialect] ?? null;
-  const result = useMemo(
+  const affirmativeResult = useMemo(
     () => selectedVerb && selectedData
-      ? applyLegacyDisplayOptions(conjugateVerb(selectedVerb, dialect, polarity), selectedData, dialect, options)
+      ? applyLegacyDisplayOptions(conjugateVerb(selectedVerb, dialect, "affirmative"), selectedData, dialect, options)
       : null,
-    [selectedVerb, selectedData, dialect, polarity, options],
+    [selectedVerb, selectedData, dialect, options],
+  );
+  const negativeResult = useMemo(
+    () => selectedVerb && selectedData
+      ? applyLegacyDisplayOptions(conjugateVerb(selectedVerb, dialect, "negative"), selectedData, dialect, options)
+      : null,
+    [selectedVerb, selectedData, dialect, options],
   );
 
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
 
-  const selectVerb = (verb: Verb) => {
-    setSelectedVerb(verb);
-    setQuery(verb.dialects[dialect]?.lemma ?? verb.english[0]);
-    setSearchStatus(verb.verified === false || verb.source === "ai" ? "ai" : "idle");
+  const rememberVerb = (verb: Verb, targetDialect: Dialect) => {
+    const data = verb.dialects[targetDialect];
+    if (!data) return;
+    const entry: RecentVerbEntry = { id: verb.id, lemma: data.lemma, dialect: targetDialect, label: data.lemma };
+    setRecentVerbs((current) => {
+      const next = pushRecentVerb(current, entry);
+      try { window.localStorage.setItem(RECENT_VERBS_STORAGE_KEY, JSON.stringify(next)); } catch { /* browser storage is optional */ }
+      return next;
+    });
   };
 
-  const submitSearch = async () => {
-    const cleanQuery = query.trim();
+  const selectVerb = (verb: Verb, targetDialect: Dialect = dialect) => {
+    const data = verb.dialects[targetDialect];
+    setSelectedVerb(verb);
+    setQuery(data?.lemma ?? verb.english[0] ?? "");
+    setSearchStatus(verb.verified === false || verb.source === "ai" ? "ai" : "idle");
+    rememberVerb(verb, targetDialect);
+  };
+
+  const searchForVerb = async (searchQuery: string, targetDialect: Dialect): Promise<void> => {
+    const cleanQuery = searchQuery.trim();
     if (!cleanQuery) {
       setSelectedVerb(null);
       setSearchStatus("not-found");
@@ -78,15 +107,14 @@ export function VerbExplorer() {
 
     setSearchStatus("loading");
     try {
-      const response = await fetch(`/api/verbs/search?q=${encodeURIComponent(cleanQuery)}&dialect=${dialect}`, { cache: "no-store" });
+      const response = await fetch(`/api/verbs/search?q=${encodeURIComponent(cleanQuery)}&dialect=${targetDialect}`, { cache: "no-store" });
       if (response.ok) {
         const payload = await response.json() as SearchApiResponse;
         if (payload.verb) {
-          selectVerb(payload.verb);
+          selectVerb(payload.verb, targetDialect);
           return;
         }
       }
-
       if (response.status === 404) {
         setSelectedVerb(null);
         setSearchStatus("not-found");
@@ -96,14 +124,18 @@ export function VerbExplorer() {
       console.error("Server verb search failed; trying local fallback.", error);
     }
 
-    const local = suggestions[0];
+    const local = searchVerbs(cleanQuery, targetDialect)[0];
     if (local) {
-      selectVerb({ ...local, source: "local", verified: true });
+      selectVerb({ ...local, source: "local", verified: true }, targetDialect);
       return;
     }
 
     setSelectedVerb(null);
     setSearchStatus("not-found");
+  };
+
+  const submitSearch = async () => {
+    await searchForVerb(query, dialect);
   };
 
   const eraseSearch = () => {
@@ -115,7 +147,7 @@ export function VerbExplorer() {
 
   const updateDialect = (nextDialect: Dialect) => {
     setDialect(nextDialect);
-    setPolarity("affirmative");
+    setActiveView("present");
     setSearchStatus("idle");
     setOptions((current) => ({
       ...current,
@@ -127,15 +159,18 @@ export function VerbExplorer() {
 
     const active = selectedVerb?.dialects[nextDialect];
     if (selectedVerb && active) {
-      setQuery(active.lemma);
+      selectVerb(selectedVerb, nextDialect);
       return;
     }
 
-    const fallback = searchVerbs(query, nextDialect)[0] ?? verbs.find((verb) => verb.dialects[nextDialect]);
-    if (fallback) {
-      setSelectedVerb({ ...fallback, source: "local", verified: true });
-      setQuery(fallback.dialects[nextDialect]?.lemma ?? fallback.english[0]);
-    }
+    void searchForVerb(query, nextDialect);
+  };
+
+  const selectRecent = async (entry: RecentVerbEntry) => {
+    setDialect(entry.dialect);
+    setActiveView("present");
+    setQuery(entry.lemma);
+    await searchForVerb(entry.lemma, entry.dialect);
   };
 
   const restoreCaret = (caret: number) => {
@@ -162,72 +197,74 @@ export function VerbExplorer() {
   };
 
   return (
-    <div className="conjugator-page" data-dialect={dialect}>
-      <section className="original-hero">
-        <div className="original-hero__inner">
-          <div className="hero-copy">
-            <span className="hero-kicker">Բարի գալուստ</span>
-            <h1>{copy.title}</h1>
-            <p>{copy.subtitle}</p>
+    <div className="conjugator-page conjugator-redesign" data-dialect={dialect}>
+      <header className="conjugator-topbar">
+        <div className="conjugator-topbar__inner">
+          <div className="conjugator-brand">
+            <Image src={brand.logoPath} alt="TUN" width={58} height={42} priority />
+            <div><strong>{copy.title}</strong><span>{copy.subtitle}</span></div>
           </div>
-
-          <div className="hero-emblem" aria-label="TUN Armenian learning">
-            <div className="hero-emblem__ornament" aria-hidden="true">Ա · Բ · Գ</div>
-            <Image src={brand.logoPath} alt="TUN" width={112} height={80} priority />
-            <span>{copy.learningTools}</span>
-          </div>
-
           <LanguageToggle value={language} onChange={setLanguage} />
         </div>
-      </section>
+      </header>
 
-      <main className="tool-shell">
-        <section className="main-tool-card">
-          <div className="tool-grid">
-            <ArmenianKeyboard language={language} textCase={options.textCase} onInsert={insertCharacter} onBackspace={backspace} onClear={eraseSearch} />
+      <main className="conjugator-workspace">
+        <ConjugatorSidebar
+          query={query}
+          dialect={dialect}
+          language={language}
+          selectedVerb={selectedVerb}
+          status={searchStatus}
+          inputRef={inputRef}
+          keyboardOpen={keyboardOpen}
+          textCase={options.textCase}
+          showTranscription={options.transcription}
+          recentVerbs={recentVerbs}
+          onQueryChange={(value) => { setQuery(value); if (searchStatus !== "idle") setSearchStatus("idle"); }}
+          onSubmit={submitSearch}
+          onErase={eraseSearch}
+          onDialectChange={updateDialect}
+          onKeyboardToggle={() => setKeyboardOpen((open) => !open)}
+          onInsert={insertCharacter}
+          onBackspace={backspace}
+          onClearKeyboard={eraseSearch}
+          onTranscriptionChange={(transcription) => setOptions((current) => ({ ...current, transcription }))}
+          onSelectRecent={selectRecent}
+        />
 
-            <div className="settings-block">
-              <DialectToggle value={dialect} language={language} onChange={updateDialect} />
-              <LegacyOptions options={options} dialect={dialect} language={language} onChange={setOptions} />
-              <TextCaseToggle value={options.textCase} onChange={(textCase) => setOptions((current) => ({ ...current, textCase }))} />
-            </div>
-
-            <CorpusStats stats={stats} language={language} />
-          </div>
-
-          <SearchBar
-            query={query}
-            dialect={dialect}
-            language={language}
-            selectedVerb={selectedVerb}
-            status={searchStatus}
-            inputRef={inputRef}
-            onQueryChange={(value) => {
-              setQuery(value);
-              if (searchStatus !== "idle") setSearchStatus("idle");
-            }}
-            onSubmit={submitSearch}
-            onErase={eraseSearch}
-          />
+        <section className="conjugator-main">
+          {selectedVerb && selectedData && affirmativeResult && negativeResult ? (
+            <>
+              <VerbSummary verb={selectedVerb} dialect={dialect} language={language} showTranscription={options.transcription} textCase={options.textCase} />
+              <section className="conjugation-workspace-card">
+                <TenseTabs value={activeView} language={language} onChange={setActiveView} />
+                {activeView === "fullSentences" ? (
+                  <SentenceConjugation verb={selectedVerb} dialect={dialect} language={language} options={options} />
+                ) : (
+                  <TenseComparison
+                    verb={selectedVerb}
+                    affirmative={affirmativeResult}
+                    negative={negativeResult}
+                    tense={activeView}
+                    language={language}
+                    showTranscription={options.transcription}
+                    textCase={options.textCase}
+                  />
+                )}
+                <p className="speaker-help">ⓘ {copy.speakerTip}</p>
+              </section>
+            </>
+          ) : (
+            <section className="conjugator-empty-state">
+              <strong>{searchStatus === "not-found" ? copy.noResults : copy.searchForVerb}</strong>
+              <span>{copy.searchHelp}</span>
+            </section>
+          )}
         </section>
 
-        {selectedVerb && selectedData && result && (
-          <>
-            <VerbSummary verb={selectedVerb} dialect={dialect} language={language} showTranscription={options.transcription} textCase={options.textCase} />
-
-            <SentenceConjugation verb={selectedVerb} dialect={dialect} language={language} options={options} />
-
-            <section className="conjugation-section">
-              <div className="polarity-tabs" role="tablist" aria-label="Conjugation polarity">
-                <button role="tab" aria-selected={polarity === "affirmative"} className={polarity === "affirmative" ? "is-active" : ""} onClick={() => setPolarity("affirmative")}>{copy.affirmative}</button>
-                <button role="tab" aria-selected={polarity === "negative"} className={polarity === "negative" ? "is-active" : ""} onClick={() => setPolarity("negative")}>{copy.negative}</button>
-              </div>
-              <ConjugationTable result={result} language={language} showTranscription={options.transcription} textCase={options.textCase} />
-            </section>
-          </>
-        )}
-
-        <PromoPanels language={language} />
+        <aside className="conjugator-resources">
+          <PromoPanels language={language} />
+        </aside>
       </main>
     </div>
   );

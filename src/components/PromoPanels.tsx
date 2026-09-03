@@ -8,21 +8,33 @@ interface PromoPanelsProps {
 
 export function PromoPanels({ language }: PromoPanelsProps) {
   const copy = copyFor(language);
+  const translatorFeatures = language === "ru"
+    ? ["Западноармянский", "Текст в речь", "Перевод фраз", "Удобно для обучения"]
+    : ["Western Armenian", "Text-to-speech", "Phrase translation", "Built for learners"];
 
   return (
-    <section className="promo-panels" aria-label="TUN resources">
-      <article className="promo-panel promo-panel--translator">
-        <span className="promo-panel__eyebrow">TUN</span>
-        <h2>{copy.translatorPromoTitle}</h2>
+    <section className="resource-panel" aria-label="TUN resources">
+      <h2 className="resource-panel__title">{copy.moreArmenianTools}</h2>
+
+      <article className="resource-card resource-card--translator">
+        <div className="resource-card__brand-row">
+          <span className="resource-card__app-icon" aria-hidden="true">Ա↔A</span>
+          <div><span>TUN</span><h3>{copy.translatorPromoTitle}</h3></div>
+        </div>
         <p>{copy.translatorPromoText}</p>
-        <a href={brand.promos.translatorUrl} target="_blank" rel="noreferrer">{copy.translatorPromoCta}</a>
+        <ul>{translatorFeatures.map((feature) => <li key={feature}>✓ {feature}</li>)}</ul>
+        <a href={brand.promos.translatorUrl} target="_blank" rel="noreferrer">{copy.translatorPromoCta} ↗</a>
       </article>
 
-      <article className="promo-panel promo-panel--school">
-        <span className="promo-panel__eyebrow">TUN</span>
-        <h2>{copy.schoolPromoTitle}</h2>
+      <article className="resource-card resource-card--school">
+        <div className="resource-card__tun">TUN <small>{language === "ru" ? "онлайн-школа" : "online Armenian School"}</small></div>
         <p>{copy.schoolPromoText}</p>
-        <a href={brand.promos.schoolUrl} target="_blank" rel="noreferrer">{copy.schoolPromoCta}</a>
+        <a href={brand.promos.schoolUrl} target="_blank" rel="noreferrer">{copy.schoolPromoCta} ↗</a>
+      </article>
+
+      <article className="resource-card resource-card--tip">
+        <h3>☼ {copy.tip}</h3>
+        <p>{copy.tipText}</p>
       </article>
     </section>
   );

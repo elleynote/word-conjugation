@@ -74,6 +74,11 @@ export interface DialectVerbData {
   probableFuture?: PersonForms;
   continuousForms?: PersonForms;
   mediativeForms?: PersonForms;
+  classNumber?: number;
+  subclass?: string;
+  regularity?: string;
+  regularCategory?: string;
+  transitivity?: string;
 }
 
 export interface Verb {

@@ -1,24 +1,35 @@
 import { describe, expect, it } from "vitest";
-import { verbs } from "../../data/verbs";
-import { getVerbMetadata } from "./metadata";
+import { getVerbSummaryMetadata } from "./metadata";
+import type { Verb } from "@/types/verb";
 
-const write = verbs.find((verb) => verb.id === "write")!;
+const verb: Verb = {
+  id: "hyw-test",
+  english: ["love"],
+  russian: [],
+  aliases: [],
+  dialects: {
+    western: {
+      lemma: "սիրել",
+      transliteration: "sirel",
+      group: "E-Class",
+      root: "սիր",
+      class: "el",
+      isIrregular: false,
+      participles: {},
+      classNumber: 2,
+      regularity: "Regular",
+      transitivity: "Transitive",
+    },
+  },
+};
 
-describe("getVerbMetadata", () => {
-  it("uses the original Western metadata columns", () => {
-    expect(getVerbMetadata(write, "western").map((field) => field.label)).toEqual([
-      "Name", "Base", "Group", "Irregular", "Root", "Particule", "Past.P", "Mediative.P", "Negative.P", "Imperfect.NP", "Subject.P", "Future.P",
+describe("getVerbSummaryMetadata", () => {
+  it("uses verified source metadata when available", () => {
+    expect(getVerbSummaryMetadata(verb, "western", "en")).toEqual([
+      { key: "dialect", label: "Dialect", value: "Western Armenian" },
+      { key: "class", label: "Conjugation class", value: "E-Class" },
+      { key: "type", label: "Verb type", value: "Regular" },
+      { key: "transitivity", label: "Transitivity", value: "Transitive" },
     ]);
-  });
-
-  it("uses the original Eastern metadata columns", () => {
-    expect(getVerbMetadata(write, "eastern").map((field) => field.label)).toEqual([
-      "Name", "Base", "Group", "Irregular", "Root", "Past.P", "Negative.P", "Imperfect.NP", "Subject.P", "Future.P",
-    ]);
-  });
-
-  it("uses the selected dialect data", () => {
-    expect(getVerbMetadata(write, "eastern")[1].value).toBe("գրել");
-    expect(getVerbMetadata(write, "western")[1].value).toBe("գրել");
   });
 });
