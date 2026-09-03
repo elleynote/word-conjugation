@@ -43,8 +43,8 @@ export function SpeakButton({ text, language, dialect, ariaLabel, className = ""
       URL.revokeObjectURL(urlRef.current);
       urlRef.current = null;
     }
+    activeStop = null;
     setState("idle");
-    if (activeStop === stop) activeStop = null;
   }, []);
 
   useEffect(() => () => {
