@@ -55,3 +55,26 @@ export function getVerbMetadata(verb: Verb, dialect: Dialect, language: Interfac
 
   return [...commonStart, ...westernOnly, ...middle, ...westernMediative, ...commonEnd];
 }
+
+export function getVerbSummaryMetadata(
+  verb: Verb,
+  dialect: Dialect,
+  language: InterfaceLanguage = "en",
+): MetadataField[] {
+  const data = verb.dialects[dialect];
+  if (!data) return [];
+
+  const en = language === "en";
+  const dialectLabel = dialect === "western"
+    ? (en ? "Western Armenian" : "Западноармянский")
+    : (en ? "Eastern Armenian" : "Восточноармянский");
+  const typeValue = data.regularity
+    ?? (data.isIrregular ? (en ? "Irregular" : "Неправильный") : (en ? "Regular" : "Правильный"));
+
+  return [
+    { key: "dialect", label: en ? "Dialect" : "Диалект", value: dialectLabel },
+    { key: "class", label: en ? "Conjugation class" : "Класс спряжения", value: data.group || "—" },
+    { key: "type", label: en ? "Verb type" : "Тип глагола", value: typeValue || "—" },
+    { key: "transitivity", label: en ? "Transitivity" : "Переходность", value: data.transitivity || "—" },
+  ];
+}

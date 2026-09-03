@@ -29,6 +29,11 @@ type DialectRow = {
   continuous_forms: Partial<Record<Person, string>> | null;
   mediative_forms: Partial<Record<Person, string>> | null;
   verified_forms: unknown;
+  class_number: number | null;
+  subclass: string | null;
+  regularity: string | null;
+  regular_category: string | null;
+  transitivity: string | null;
 };
 
 type OverrideRow = {
@@ -99,6 +104,11 @@ function dialectDataFromRow(row: DialectRow, overrides: OverrideRow[]): DialectV
     probableFuture: row.probable_future ?? undefined,
     continuousForms: row.continuous_forms ?? undefined,
     mediativeForms: row.mediative_forms ?? undefined,
+    classNumber: row.class_number ?? undefined,
+    subclass: row.subclass ?? undefined,
+    regularity: row.regularity ?? undefined,
+    regularCategory: row.regular_category ?? undefined,
+    transitivity: row.transitivity ?? undefined,
   };
 }
 

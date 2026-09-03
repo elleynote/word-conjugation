@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { InterfaceLanguage, TextCaseMode } from "@/types/verb";
 import { copyFor } from "@/lib/i18n/copy";
 
@@ -12,45 +11,40 @@ const letters = [
 interface ArmenianKeyboardProps {
   language: InterfaceLanguage;
   textCase: TextCaseMode;
+  open: boolean;
+  onToggle: () => void;
   onInsert: (character: string) => void;
   onBackspace: () => void;
   onClear: () => void;
 }
 
-export function ArmenianKeyboard({ language, textCase, onInsert, onBackspace, onClear }: ArmenianKeyboardProps) {
+export function ArmenianKeyboard({ language, textCase, open, onToggle, onInsert, onBackspace, onClear }: ArmenianKeyboardProps) {
   const copy = copyFor(language);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const rendered = textCase === "lower" ? letters : letters.map((letter) => letter.toLocaleUpperCase("hy-AM"));
 
   return (
-    <section className="keyboard-block" aria-label={copy.keyboard} data-mobile-open={mobileOpen ? "true" : "false"}>
-      <div className="keyboard-heading-row">
-        <div className="tool-label">{copy.keyboard}</div>
-        <button
-          type="button"
-          className="keyboard-mobile-toggle"
-          aria-expanded={mobileOpen}
-          aria-controls="armenian-keyboard-body"
-          onClick={() => setMobileOpen((open) => !open)}
-        >
-          {mobileOpen ? copy.hideKeyboard : copy.showKeyboard}
-          <span aria-hidden="true">{mobileOpen ? "−" : "+"}</span>
-        </button>
-      </div>
+    <section className="sidebar-keyboard" aria-label={copy.keyboard} data-open={open ? "true" : "false"}>
+      <button type="button" className="sidebar-keyboard__toggle" aria-expanded={open} aria-controls="armenian-keyboard-body" onClick={onToggle}>
+        <span aria-hidden="true">⌨</span>
+        <span>{open ? copy.hideKeyboard : copy.showKeyboard}</span>
+        <span aria-hidden="true">{open ? "−" : "+"}</span>
+      </button>
 
-      <div id="armenian-keyboard-body" className="keyboard-collapsible-body">
-        <div className="keyboard-grid">
-          {rendered.map((letter) => (
-            <button key={letter} type="button" className="keyboard-key" onClick={() => onInsert(letter)} aria-label={`${copy.keyboard}: ${letter}`}>
-              {letter}
-            </button>
-          ))}
+      {open && (
+        <div id="armenian-keyboard-body" className="sidebar-keyboard__body">
+          <div className="sidebar-keyboard__grid">
+            {rendered.map((letter) => (
+              <button key={letter} type="button" onClick={() => onInsert(letter)} aria-label={`${copy.keyboard}: ${letter}`}>
+                {letter}
+              </button>
+            ))}
+          </div>
+          <div className="sidebar-keyboard__actions">
+            <button type="button" onClick={onBackspace} aria-label="Backspace">⌫</button>
+            <button type="button" onClick={onClear}>{copy.erase}</button>
+          </div>
         </div>
-        <div className="keyboard-actions">
-          <button type="button" onClick={onBackspace} aria-label="Backspace">⌫ <span>{language === "ru" ? "Назад" : "Backspace"}</span></button>
-          <button type="button" onClick={onClear}>{copy.erase}</button>
-        </div>
-      </div>
+      )}
     </section>
   );
 }

@@ -1,7 +1,7 @@
 import type { Dialect, InterfaceLanguage, TextCaseMode, Verb } from "@/types/verb";
-import { getVerbMetadata } from "@/lib/metadata/metadata";
+import { getVerbSummaryMetadata } from "@/lib/metadata/metadata";
 import { applyTextCase } from "@/lib/presentation/format";
-import { transliterateArmenian } from "@/lib/transliteration/transliterate";
+import { SpeakButton } from "./SpeakButton";
 
 interface VerbSummaryProps {
   verb: Verb;
@@ -11,45 +11,41 @@ interface VerbSummaryProps {
   textCase: TextCaseMode;
 }
 
-function hasArmenian(value: string) {
-  return /[\u0530-\u058F]/u.test(value);
-}
-
 export function VerbSummary({ verb, dialect, language, showTranscription, textCase }: VerbSummaryProps) {
-  const fields = getVerbMetadata(verb, dialect, language);
+  const data = verb.dialects[dialect];
+  if (!data) return null;
+
+  const fields = getVerbSummaryMetadata(verb, dialect, language);
+  const russianMeaning = verb.russian[0];
+  const englishMeaning = verb.english[0];
+  const meaning = language === "ru" && russianMeaning ? russianMeaning : englishMeaning ?? russianMeaning ?? "";
+  const meaningLanguage = language === "ru" && russianMeaning ? "ru" : "en";
+  const lemma = applyTextCase(data.lemma, textCase);
 
   return (
-    <section className="metadata-section" aria-label={language === "ru" ? "Грамматическая информация о глаголе" : "Verb grammatical information"}>
-      <div className="metadata-table-wrap">
-        <table className="metadata-table">
-          <thead><tr>{fields.map((field) => <th key={field.key}>{field.label}</th>)}</tr></thead>
-          <tbody>
-            <tr>{fields.map((field) => {
-              const armenian = hasArmenian(field.value);
-              const value = armenian ? applyTextCase(field.value, textCase) : field.value;
-              return (
-                <td key={field.key}>
-                  {field.key === "group" ? <span className="group-badge">{value}</span> : field.key === "irregular" ? <span className="yes-no-badge">{value}</span> : <strong>{value}</strong>}
-                  {showTranscription && armenian && field.value !== "—" && <small>{transliterateArmenian(field.value, dialect)}</small>}
-                </td>
-              );
-            })}</tr>
-          </tbody>
-        </table>
+    <section className="verb-summary-card" aria-label={language === "ru" ? "Информация о глаголе" : "Verb information"}>
+      <div className="verb-summary-card__mark" aria-hidden="true">{data.lemma.trim().slice(0, 1)}</div>
+      <div className="verb-summary-card__identity">
+        <div className="verb-summary-card__title-row">
+          <strong className="verb-summary-card__lemma">{lemma}</strong>
+          <SpeakButton text={data.lemma} language="hy" dialect={dialect} ariaLabel={`Play ${data.lemma}`} />
+        </div>
+        {showTranscription && <span className="verb-summary-card__transliteration">{data.transliteration}</span>}
+        {meaning && (
+          <div className="verb-summary-card__meaning">
+            <span>{meaning}</span>
+            <SpeakButton text={meaning} language={meaningLanguage} ariaLabel={`Play ${meaning}`} />
+          </div>
+        )}
       </div>
-
-      <div className="metadata-cards">
-        {fields.map((field) => {
-          const armenian = hasArmenian(field.value);
-          return (
-            <article key={field.key}>
-              <span>{field.label}</span>
-              <strong>{armenian ? applyTextCase(field.value, textCase) : field.value}</strong>
-              {showTranscription && armenian && field.value !== "—" && <small>{transliterateArmenian(field.value, dialect)}</small>}
-            </article>
-          );
-        })}
-      </div>
+      <dl className="verb-summary-card__facts">
+        {fields.map((field) => (
+          <div key={field.key}>
+            <dt>{field.label}</dt>
+            <dd>{field.value || "—"}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }
