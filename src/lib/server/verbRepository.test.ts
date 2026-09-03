@@ -64,7 +64,8 @@ describe("findVerifiedVerb", () => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-test-key";
 
     const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
-      const url = String(input);
+      const rawUrl = String(input);
+      const url = decodeURIComponent(rawUrl);
 
       if (url.includes("verb_translations?select=verb_id")) return jsonResponse([]);
       if (url.includes("verb_dialects?select=verb_id")) return jsonResponse([{ verb_id: "hyw-test" }]);
@@ -88,7 +89,7 @@ describe("findVerifiedVerb", () => {
       if (url.includes("verb_dialects?verb_id=eq.hyw-test")) return jsonResponse([dialectRow]);
       if (url.includes("irregular_overrides?verb_id=eq.hyw-test")) return jsonResponse([]);
 
-      throw new Error(`Unexpected Supabase request: ${url}`);
+      throw new Error(`Unexpected Supabase request: ${rawUrl}`);
     });
 
     const verb = await findVerifiedVerb("կուտակել", "western");
