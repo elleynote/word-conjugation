@@ -54,10 +54,11 @@ export function SearchBar({ query, dialect, language, status, inputRef, onQueryC
         {status === "loading" ? (language === "ru" ? "Поиск…" : "Searching…") : copy.searchButton}
       </button>
       <p className="sidebar-search__help">{helpText(dialect, language)}</p>
-      <div className="sidebar-search__feedback" aria-live="polite">
-        {status === "not-found" && <span>{copy.noResults}</span>}
-        {status === "ai" && <span className="sidebar-search__warning">{copy.unverifiedAi}</span>}
-      </div>
+      {status === "not-found" && (
+        <div className="sidebar-search__feedback" aria-live="polite">
+          <span>{copy.noResults}</span>
+        </div>
+      )}
     </section>
   );
 }
