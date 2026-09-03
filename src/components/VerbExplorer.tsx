@@ -29,13 +29,25 @@ interface SearchApiResponse {
   verified: boolean;
 }
 
+function loadRecentVerbs(): RecentVerbEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_VERBS_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as RecentVerbEntry[];
+    return Array.isArray(parsed) ? parsed.slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function VerbExplorer() {
   const [language, setLanguage] = useState<InterfaceLanguage>("en");
   const [dialect, setDialect] = useState<Dialect>("western");
   const [activeView, setActiveView] = useState<ConjugatorView>("present");
   const [searchStatus, setSearchStatus] = useState<SearchStatus>("idle");
   const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const [recentVerbs, setRecentVerbs] = useState<RecentVerbEntry[]>([]);
+  const [recentVerbs, setRecentVerbs] = useState<RecentVerbEntry[]>(loadRecentVerbs);
   const [options, setOptions] = useState<LegacyDisplayOptions>({
     transcription: true,
     probableFuture: false,
@@ -48,7 +60,6 @@ export function VerbExplorer() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const copy = copyFor(language);
-  const suggestions = useMemo(() => searchVerbs(query, dialect), [query, dialect]);
   const selectedData = selectedVerb?.dialects[dialect] ?? null;
   const affirmativeResult = useMemo(
     () => selectedVerb && selectedData
@@ -66,17 +77,6 @@ export function VerbExplorer() {
   useEffect(() => {
     document.documentElement.lang = language;
   }, [language]);
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(RECENT_VERBS_STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as RecentVerbEntry[];
-      if (Array.isArray(parsed)) setRecentVerbs(parsed.slice(0, 5));
-    } catch {
-      setRecentVerbs([]);
-    }
-  }, []);
 
   const rememberVerb = (verb: Verb, targetDialect: Dialect) => {
     const data = verb.dialects[targetDialect];
