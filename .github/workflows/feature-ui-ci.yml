@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - feature/new-conjugator-ui-tts
-      - fix/footer-background-parity
   workflow_dispatch:
 
 jobs:
