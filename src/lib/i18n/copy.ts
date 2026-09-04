@@ -68,9 +68,9 @@ const dictionary = {
     translatorPromoTitle: "Armenian Translator App",
     translatorPromoText: "Translate Eastern and Western Armenian words, phrases and sentences instantly.",
     translatorPromoCta: "Open Armenian Translator",
-    schoolPromoTitle: "TUN Online Armenian School",
-    schoolPromoText: "Live Armenian lessons with expert teachers. Learn at your own pace from anywhere in the world.",
-    schoolPromoCta: "Explore TUN School",
+    schoolPromoTitle: "TUN Online Armenian Schools",
+    schoolPromoText: "Start learning to speak, read and write in Armenian with easy-to-follow Armenian lessons online and entertaining games, available on demand.",
+    schoolPromoCta: "Try 4 lessons for $1",
     tenses: tenseNames.en,
   },
   ru: {
