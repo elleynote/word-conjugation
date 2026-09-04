@@ -10,6 +10,11 @@ describe("interface copy", () => {
     expect(copyFor("ru").title).toContain("армянских");
   });
 
+  it("uses compact English dialect button labels", () => {
+    expect(copyFor("en").western).toBe("Western");
+    expect(copyFor("en").eastern).toBe("Eastern");
+  });
+
   it("uses the selected language translation", () => {
     expect(localizedVerbTranslation(write, "ru")).toBe("писать");
     expect(localizedVerbTranslation(write, "en")).toBe("write");
