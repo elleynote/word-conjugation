@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feature/new-conjugator-ui-tts
+      - fix/compact-dialect-labels
   workflow_dispatch:
 
 jobs:
