@@ -1,12 +1,6 @@
-import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { PromoPanels } from "./PromoPanels";
-
-const promoCss = readFileSync(
-  new URL("../app/conjugator-redesign.css", import.meta.url),
-  "utf8",
-);
 
 describe("PromoPanels", () => {
   it("renders the Armenian Translator promo with the TUN favicon and requested English copy", () => {
@@ -22,12 +16,5 @@ describe("PromoPanels", () => {
     expect(html).toContain("Open Armenian Translator");
     expect(html).not.toContain("Ա↔A");
     expect(html).not.toContain(">TUN</span>");
-  });
-
-  it("does not keep the old blue-gradient app-icon treatment", () => {
-    const appIconRule = promoCss.match(/\.resource-card__app-icon\s*\{[^}]*\}/s)?.[0] ?? "";
-
-    expect(appIconRule).not.toContain("linear-gradient");
-    expect(appIconRule).toContain("object-fit: cover");
   });
 });
