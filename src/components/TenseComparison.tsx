@@ -43,12 +43,7 @@ function FormCell({ form, english, dialect, textCase, showTranscription }: FormC
         <SpeakButton text={form.armenian} language="hy" dialect={dialect} ariaLabel={`Play ${form.armenian}`} />
       </div>
       {showTranscription && form.transliteration !== "—" && <span className="comparison-form__transliteration">{form.transliteration}</span>}
-      {english && (
-        <div className="comparison-form__english">
-          <span>{english}</span>
-          <SpeakButton text={english} language="en" ariaLabel={`Play ${english}`} />
-        </div>
-      )}
+      {english && <div className="comparison-form__english"><span>{english}</span></div>}
     </div>
   );
 }
