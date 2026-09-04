@@ -2,22 +2,21 @@
   width: 100%;
   overflow: hidden;
   padding-top: 32px;
-  background: #ffffff;
+  background: var(--brand-bg);
 }
 
 .curve {
   position: relative;
   min-height: clamp(300px, 30vw, 460px);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--brand-bg);
 }
 
 .scene {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #e9e9e9;
-  clip-path: ellipse(72% 100% at 50% 100%);
+  background: var(--brand-bg);
 }
 
 .artwork {
@@ -59,10 +58,6 @@
 
   .curve {
     min-height: 240px;
-  }
-
-  .scene {
-    clip-path: ellipse(82% 100% at 50% 100%);
   }
 
   .artwork {
