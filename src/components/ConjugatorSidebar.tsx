@@ -39,7 +39,6 @@ export function ConjugatorSidebar(props: ConjugatorSidebarProps) {
   const russianMeaning = props.selectedVerb?.russian[0];
   const englishMeaning = props.selectedVerb?.english[0];
   const meaning = props.language === "ru" && russianMeaning ? russianMeaning : englishMeaning ?? russianMeaning ?? "";
-  const meaningLanguage = props.language === "ru" && russianMeaning ? "ru" : "en";
   const regularity = data?.regularity ?? (data?.isIrregular ? (props.language === "ru" ? "Неправильный" : "Irregular") : (props.language === "ru" ? "Правильный" : "Regular"));
 
   return (
@@ -62,12 +61,7 @@ export function ConjugatorSidebar(props: ConjugatorSidebarProps) {
             <SpeakButton text={data.lemma} language="hy" dialect={props.dialect} ariaLabel={`Play ${data.lemma}`} />
           </div>
           <span className="sidebar-selected-card__transliteration">{data.transliteration}</span>
-          {meaning && (
-            <div className="sidebar-selected-card__meaning">
-              <span>{meaning}</span>
-              <SpeakButton text={meaning} language={meaningLanguage} ariaLabel={`Play ${meaning}`} />
-            </div>
-          )}
+          {meaning && <div className="sidebar-selected-card__meaning"><span>{meaning}</span></div>}
           <span className="sidebar-selected-card__badge">{regularity}{data.group ? ` · ${data.group}` : ""}</span>
         </section>
       )}
