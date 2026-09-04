@@ -1,8 +1,6 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { brand } from "@/config/brand";
 import { verbs } from "@/data/verbs";
 import { conjugateVerb } from "@/lib/conjugation/conjugate";
 import { backspaceAtSelection, insertAtSelection } from "@/lib/keyboard/insertAtSelection";
@@ -13,7 +11,7 @@ import { RECENT_VERBS_STORAGE_KEY, pushRecentVerb, type RecentVerbEntry } from "
 import type { ConjugatorView } from "@/lib/presentation/conjugatorTabs";
 import type { Dialect, InterfaceLanguage, LegacyDisplayOptions, Verb } from "@/types/verb";
 import { ConjugatorSidebar } from "./ConjugatorSidebar";
-import { LanguageToggle } from "./LanguageToggle";
+import { Header } from "./Header";
 import { PromoPanels } from "./PromoPanels";
 import { type SearchStatus } from "./SearchBar";
 import { SentenceConjugation } from "./SentenceConjugation";
@@ -198,15 +196,7 @@ export function VerbExplorer() {
 
   return (
     <div className="conjugator-page conjugator-redesign" data-dialect={dialect}>
-      <header className="conjugator-topbar">
-        <div className="conjugator-topbar__inner">
-          <div className="conjugator-brand">
-            <Image src={brand.logoPath} alt="TUN" width={58} height={42} priority />
-            <div><strong>{copy.title}</strong><span>{copy.subtitle}</span></div>
-          </div>
-          <LanguageToggle value={language} onChange={setLanguage} />
-        </div>
-      </header>
+      <Header language={language} onLanguageChange={setLanguage} />
 
       <main className="conjugator-workspace">
         <ConjugatorSidebar
