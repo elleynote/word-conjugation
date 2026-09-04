@@ -19,7 +19,6 @@ export function VerbSummary({ verb, dialect, language, showTranscription, textCa
   const russianMeaning = verb.russian[0];
   const englishMeaning = verb.english[0];
   const meaning = language === "ru" && russianMeaning ? russianMeaning : englishMeaning ?? russianMeaning ?? "";
-  const meaningLanguage = language === "ru" && russianMeaning ? "ru" : "en";
   const lemma = applyTextCase(data.lemma, textCase);
 
   return (
@@ -31,12 +30,7 @@ export function VerbSummary({ verb, dialect, language, showTranscription, textCa
           <SpeakButton text={data.lemma} language="hy" dialect={dialect} ariaLabel={`Play ${data.lemma}`} />
         </div>
         {showTranscription && <span className="verb-summary-card__transliteration">{data.transliteration}</span>}
-        {meaning && (
-          <div className="verb-summary-card__meaning">
-            <span>{meaning}</span>
-            <SpeakButton text={meaning} language={meaningLanguage} ariaLabel={`Play ${meaning}`} />
-          </div>
-        )}
+        {meaning && <div className="verb-summary-card__meaning"><span>{meaning}</span></div>}
       </div>
       <dl className="verb-summary-card__facts">
         {fields.map((field) => (
