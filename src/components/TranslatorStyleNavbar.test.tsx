@@ -1,0 +1,32 @@
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+import { VerbExplorer } from "./VerbExplorer";
+
+const links = [
+  ["Lessons", "https://tunapp.com/get-started"],
+  ["Translate", "https://translatearmenian.com"],
+  ["Tutoring", "https://tunapp.com/western-armenian-tutoring"],
+  ["Workbooks and Flashcards", "https://tunapp.com/shop"],
+  ["Speaking Practice", "https://armeniansocialnetwork.com"],
+  ["Contact Us", "mailto:hello@tunapp.com"],
+] as const;
+
+describe("conjugator translator-style navbar", () => {
+  it("renders the TUN logo and requested navigation without auth links", () => {
+    const html = renderToStaticMarkup(<VerbExplorer />);
+
+    expect(html).toContain("Tun-Logo_Web-Black_80.png");
+
+    for (const [label, href] of links) {
+      expect(html).toContain(`href=\"${href}\"`);
+      expect(html).toContain(`>${label}</a>`);
+    }
+
+    expect(html).toContain('aria-controls="site-main-navigation"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).not.toContain(">Log in<");
+    expect(html).not.toContain(">Log out<");
+    expect(html).not.toContain(">Pricing<");
+    expect(html).not.toContain(">Dashboard<");
+  });
+});
