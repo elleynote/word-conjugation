@@ -51,6 +51,8 @@ export function Header({ language, onLanguageChange }: HeaderProps) {
               key={item.href}
               href={item.href}
               className="nav-link"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
             >
               {item.label}
