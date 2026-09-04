@@ -66,8 +66,8 @@ export function getVerbSummaryMetadata(
 
   const en = language === "en";
   const dialectLabel = dialect === "western"
-    ? (en ? "Western Armenian" : "Западноармянский")
-    : (en ? "Eastern Armenian" : "Восточноармянский");
+    ? (en ? "Western" : "Западноармянский")
+    : (en ? "Eastern" : "Восточноармянский");
   const typeValue = data.regularity
     ?? (data.isIrregular ? (en ? "Irregular" : "Неправильный") : (en ? "Regular" : "Правильный"));
 

@@ -26,7 +26,7 @@ const verb: Verb = {
 describe("getVerbSummaryMetadata", () => {
   it("uses verified source metadata when available", () => {
     expect(getVerbSummaryMetadata(verb, "western", "en")).toEqual([
-      { key: "dialect", label: "Dialect", value: "Western Armenian" },
+      { key: "dialect", label: "Dialect", value: "Western" },
       { key: "class", label: "Conjugation class", value: "E-Class" },
       { key: "type", label: "Verb type", value: "Regular" },
       { key: "transitivity", label: "Transitivity", value: "Transitive" },
