@@ -29,4 +29,14 @@ describe("conjugator translator-style navbar", () => {
     expect(html).not.toContain(">Pricing<");
     expect(html).not.toContain(">Dashboard<");
   });
+
+  it("opens every navbar destination in a new tab safely", () => {
+    const html = renderToStaticMarkup(<VerbExplorer />);
+
+    for (const [, href] of links) {
+      const anchor = html.match(new RegExp(`<a[^>]*href="${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*>`))?.[0] ?? "";
+      expect(anchor).toContain('target="_blank"');
+      expect(anchor).toContain('rel="noopener noreferrer"');
+    }
+  });
 });
