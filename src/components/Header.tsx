@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { InterfaceLanguage } from "@/types/verb";
 import { LanguageToggle } from "./LanguageToggle";
@@ -28,7 +29,7 @@ export function Header({ language, onLanguageChange }: HeaderProps) {
     <header className="site-header">
       <div className="shell header-inner">
         <div className="brand-group">
-          <a className="tun-logo-link" href="/" aria-label="Armenian conjugation home">
+          <Link className="tun-logo-link" href="/" aria-label="Armenian conjugation home">
             <img
               className="tun-logo-image"
               src={TUN_LOGO_URL}
@@ -37,7 +38,7 @@ export function Header({ language, onLanguageChange }: HeaderProps) {
               alt="Tun"
               fetchPriority="high"
             />
-          </a>
+          </Link>
         </div>
 
         <nav
