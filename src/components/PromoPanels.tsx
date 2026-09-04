@@ -6,11 +6,13 @@ interface PromoPanelsProps {
   language: InterfaceLanguage;
 }
 
+const tunFavicon = "https://tunapp.com/wp-content/uploads/2020/09/cropped-Tun_Site-Icon-180x180.png";
+
 export function PromoPanels({ language }: PromoPanelsProps) {
   const copy = copyFor(language);
   const translatorFeatures = language === "ru"
     ? ["Западноармянский", "Текст в речь", "Перевод фраз", "Удобно для обучения"]
-    : ["Western Armenian", "Text-to-speech", "Phrase translation", "Built for learners"];
+    : ["Eastern and Western Armenian", "Text-to-speech", "Phrase translation", "Built for learners"];
 
   return (
     <section className="resource-panel" aria-label="TUN resources">
@@ -18,8 +20,14 @@ export function PromoPanels({ language }: PromoPanelsProps) {
 
       <article className="resource-card resource-card--translator">
         <div className="resource-card__brand-row">
-          <span className="resource-card__app-icon" aria-hidden="true">Ա↔A</span>
-          <div><span>TUN</span><h3>{copy.translatorPromoTitle}</h3></div>
+          <img
+            className="resource-card__app-icon"
+            src={tunFavicon}
+            alt=""
+            aria-hidden="true"
+            style={{ objectFit: "cover", background: "transparent" }}
+          />
+          <div><h3>{copy.translatorPromoTitle}</h3></div>
         </div>
         <p>{copy.translatorPromoText}</p>
         <ul>{translatorFeatures.map((feature) => <li key={feature}>✓ {feature}</li>)}</ul>
