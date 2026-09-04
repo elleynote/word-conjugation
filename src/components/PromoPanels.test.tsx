@@ -20,8 +20,9 @@ describe("PromoPanels", () => {
 
   it("renders the TUN school promo with the same favicon heading treatment and requested copy", () => {
     const html = renderToStaticMarkup(<PromoPanels language="en" />);
+    const faviconImages = html.match(/<img[^>]+cropped-Tun_Site-Icon-180x180\.png[^>]*>/g) ?? [];
 
-    expect(html.match(/cropped-Tun_Site-Icon-180x180\.png/g)?.length).toBe(2);
+    expect(faviconImages).toHaveLength(2);
     expect(html).toContain("TUN Online Armenian Schools");
     expect(html).toContain("Start learning to speak, read and write in Armenian with easy-to-follow Armenian lessons online and entertaining games, available on demand.");
     expect(html).toContain("Try 4 lessons for $1");
