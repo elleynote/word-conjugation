@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - feature/new-conjugator-ui-tts
-      - fix/school-promo-card
   workflow_dispatch:
 
 jobs:
