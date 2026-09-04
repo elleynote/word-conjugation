@@ -70,12 +70,7 @@ export function SentenceConjugation({ verb, dialect, language, options }: Senten
               <SpeakButton text={row.armenian} language="hy" dialect={dialect} ariaLabel={`Play ${row.armenian}`} />
             </div>
             {options.transcription && <span className="full-sentence-card__transcription">{row.transcription}</span>}
-            {row.english && (
-              <div className="full-sentence-card__english">
-                <span>{row.english}</span>
-                <SpeakButton text={row.english} language="en" ariaLabel={`Play ${row.english}`} />
-              </div>
-            )}
+            {row.english && <div className="full-sentence-card__english"><span>{row.english}</span></div>}
           </article>
         ))}
       </div>
