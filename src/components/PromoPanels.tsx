@@ -35,7 +35,16 @@ export function PromoPanels({ language }: PromoPanelsProps) {
       </article>
 
       <article className="resource-card resource-card--school">
-        <div className="resource-card__tun">TUN <small>{language === "ru" ? "онлайн-школа" : "online Armenian School"}</small></div>
+        <div className="resource-card__brand-row">
+          <img
+            className="resource-card__app-icon"
+            src={tunFavicon}
+            alt=""
+            aria-hidden="true"
+            style={{ objectFit: "cover", background: "transparent" }}
+          />
+          <div><h3>{copy.schoolPromoTitle}</h3></div>
+        </div>
         <p>{copy.schoolPromoText}</p>
         <a href={brand.promos.schoolUrl} target="_blank" rel="noreferrer">{copy.schoolPromoCta} ↗</a>
       </article>
