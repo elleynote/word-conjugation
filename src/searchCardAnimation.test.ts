@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const css = readFileSync(new URL("./app/translator-consistency.css", import.meta.url), "utf8");
+const css = readFileSync(new URL("./app/search-attention.css", import.meta.url), "utf8");
 
 describe("search card attention border", () => {
   it("uses the TUN accent palette for a moving outline", () => {
