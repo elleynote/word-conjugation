@@ -19,37 +19,97 @@ const westernOverrides: Record<string, string> = {
 };
 
 const WESTERN_WORD_OVERRIDES: Record<string, string> = {
-  "ես": "Yes",
   "դուն": "Toun",
   "դուք": "Touk",
 };
 
 const OU_LOWER = "\uE000";
 const OU_TITLE = "\uE001";
+const ARMENIAN_WORD = /[Ա-Ֆա-ֆև]+/u;
+const SENTENCE_END = /[.!?։՞՜]\s*$/u;
 
-function transliterateToken(token: string, dialect: Dialect): string {
-  if (dialect === "western" && WESTERN_WORD_OVERRIDES[token]) {
-    return WESTERN_WORD_OVERRIDES[token];
+function transliterateWesternCore(core: string, sentenceInitial: boolean): string {
+  if (core === "ես") {
+    return sentenceInitial ? "Yes" : "es";
   }
 
-  const withDigraphs = token
+  if (core === "եմ") {
+    return "em";
+  }
+
+  if (WESTERN_WORD_OVERRIDES[core]) {
+    return WESTERN_WORD_OVERRIDES[core];
+  }
+
+  const withDigraphs = core
     .replace(/Ու/g, OU_TITLE)
     .replace(/ու/g, OU_LOWER);
 
   return Array.from(withDigraphs)
-    .map((character) => {
+    .map((character, index) => {
       if (character === OU_LOWER) return "ou";
       if (character === OU_TITLE) return "Ou";
-      return (dialect === "western" ? westernOverrides[character] : undefined) ?? commonMap[character] ?? character;
+      if (index === 0 && character === "ե") return "ye";
+      if (index === 0 && character === "Ե") return "Ye";
+      if (index === 0 && character === "ո") return "vo";
+      if (index === 0 && character === "Ո") return "Vo";
+      return westernOverrides[character] ?? commonMap[character] ?? character;
     })
     .join("");
 }
 
+function transliterateToken(token: string, dialect: Dialect, sentenceInitial: boolean): string {
+  const match = token.match(ARMENIAN_WORD);
+
+  if (!match) {
+    return token;
+  }
+
+  const core = match[0];
+  const start = match.index ?? 0;
+  const prefix = token.slice(0, start);
+  const suffix = token.slice(start + core.length);
+
+  if (dialect === "western") {
+    return `${prefix}${transliterateWesternCore(core, sentenceInitial)}${suffix}`;
+  }
+
+  const withDigraphs = core
+    .replace(/Ու/g, OU_TITLE)
+    .replace(/ու/g, OU_LOWER);
+
+  const transliterated = Array.from(withDigraphs)
+    .map((character) => {
+      if (character === OU_LOWER) return "ou";
+      if (character === OU_TITLE) return "Ou";
+      return commonMap[character] ?? character;
+    })
+    .join("");
+
+  return `${prefix}${transliterated}${suffix}`;
+}
+
 export function transliterateArmenian(value: string, dialect: Dialect): string {
-  return value
+  let sentenceInitial = true;
+
+  const output = value
     .split(/(\s+)/)
-    .map((part) => (/^\s+$/u.test(part) ? part : transliterateToken(part, dialect)))
+    .map((part) => {
+      if (/^\s+$/u.test(part)) {
+        return part;
+      }
+
+      const transliterated = transliterateToken(part, dialect, sentenceInitial);
+
+      if (ARMENIAN_WORD.test(part)) {
+        sentenceInitial = SENTENCE_END.test(part);
+      }
+
+      return transliterated;
+    })
     .join("")
     .replace(/\s+/g, " ")
     .trim();
+
+  return output;
 }
