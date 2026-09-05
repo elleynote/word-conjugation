@@ -98,8 +98,8 @@ describe("strict verified verb search", () => {
       requests.push(url);
 
       if (url.includes("verb_translations?")) return jsonResponse([]);
-      if (url.includes("verb_dialects?") && url.includes("transliteration=eq.sirel")) return jsonResponse([{ verb_id: "hyw-2661" }]);
-      if (url.includes("verb_dialects?") && url.includes("lemma=eq.սիրել")) return jsonResponse([{ verb_id: "hyw-2661" }]);
+      if (url.includes("verb_dialects?") && url.includes("transliteration.eq.sirel")) return jsonResponse([{ verb_id: "hyw-2661" }]);
+      if (url.includes("verb_dialects?") && url.includes("lemma.eq.սիրել")) return jsonResponse([{ verb_id: "hyw-2661" }]);
       if (url.includes("verbs?id=eq.hyw-2661")) return jsonResponse([sirelVerb]);
       throw new Error(`Unexpected request: ${url}`);
     });
