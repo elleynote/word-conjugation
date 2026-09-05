@@ -28,4 +28,14 @@ describe("PromoPanels", () => {
     expect(html).toContain("Try 4 lessons for $1");
     expect(html).not.toContain("online Armenian School</small>");
   });
+
+  it("renders the contextual verb-learning Tip with the TUN school link", () => {
+    const html = renderToStaticMarkup(<PromoPanels language="en" />);
+
+    expect(html).toContain("Learn verbs in context. Don’t just memorise individual conjugations, practise each form in a complete sentence to understand how Armenian verbs change naturally in everyday speech. Need help? Try 4 lessons for $1 with");
+    expect(html).toContain('href="https://tunapp.com"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain(">Tun Online Armenian School</a>");
+  });
 });
