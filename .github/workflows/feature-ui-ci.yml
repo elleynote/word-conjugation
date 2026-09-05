@@ -5,6 +5,7 @@ on:
     branches:
       - feature/new-conjugator-ui-tts
       - feature/top-promo-bar
+      - feature/search-border-animation
   workflow_dispatch:
 
 jobs:
