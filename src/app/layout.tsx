@@ -7,6 +7,7 @@ import "./conjugator-redesign.css";
 import "./translator-consistency.css";
 import "./translator-navbar.css";
 import "./top-promo-bar.css";
+import "./search-attention.css";
 
 const tunFavicon = "https://tunapp.com/wp-content/uploads/2020/09/cropped-Tun_Site-Icon-180x180.png";
 
