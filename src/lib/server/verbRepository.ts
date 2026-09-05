@@ -1,4 +1,4 @@
-import { searchVerbs } from "@/lib/search/searchVerbs";
+import { findExactVerb } from "@/lib/search/searchVerbs";
 import { normalizeSearchQuery } from "@/lib/search/normalize";
 import type { Dialect, DialectVerbData, IrregularOverrides, Person, Polarity, Tense, Verb } from "@/types/verb";
 import { hasSupabaseReadConfig, hasSupabaseServiceConfig, supabaseRest } from "./supabaseRest";
@@ -163,16 +163,28 @@ async function searchSupabase(query: string, dialect: Dialect): Promise<Verb | n
   const token = queryToken(query);
   if (!token) return null;
 
-  const orTranslation = encodeURIComponent(`(value.ilike.*${token}*)`);
-  const orDialect = encodeURIComponent(`(lemma.ilike.*${token}*,transliteration.ilike.*${token}*)`);
+  const encodedToken = encodeURIComponent(token);
   const encodedDialect = encodeURIComponent(dialect);
+  const exactDialect = encodeURIComponent(`(lemma.eq.${token},transliteration.eq.${token})`);
 
-  const [translationMatches, dialectMatches] = await Promise.all([
-    supabaseRest<CandidateIdRow[]>(`verb_translations?select=verb_id&or=${orTranslation}&limit=8`),
-    supabaseRest<CandidateIdRow[]>(`verb_dialects?select=verb_id&dialect=eq.${encodedDialect}&or=${orDialect}&limit=8`),
+  const [englishMatches, dialectMatches] = await Promise.all([
+    supabaseRest<CandidateIdRow[]>(
+      `verb_translations?select=verb_id&language_code=eq.en&value=eq.${encodedToken}&order=is_primary.desc&limit=8`,
+    ),
+    supabaseRest<CandidateIdRow[]>(
+      `verb_dialects?select=verb_id&dialect=eq.${encodedDialect}&or=${exactDialect}&limit=8`,
+    ),
   ]);
 
-  const candidateIds = [...dialectMatches, ...translationMatches].map((item) => item.verb_id);
+  let candidateIds = [...englishMatches, ...dialectMatches].map((item) => item.verb_id);
+
+  if (!candidateIds.length) {
+    const translationMatches = await supabaseRest<CandidateIdRow[]>(
+      `verb_translations?select=verb_id&value=eq.${encodedToken}&order=is_primary.desc&limit=8`,
+    );
+    candidateIds = translationMatches.map((item) => item.verb_id);
+  }
+
   for (const candidateId of [...new Set(candidateIds)]) {
     const verb = await fetchVerbById(candidateId);
     if (verb?.dialects[dialect]) return verb;
@@ -190,7 +202,7 @@ export async function findVerifiedVerb(query: string, dialect: Dialect): Promise
     }
   }
 
-  const local = searchVerbs(query, dialect)[0];
+  const local = findExactVerb(query, dialect);
   return local ? { ...local, source: "local", verified: true } : null;
 }
 
