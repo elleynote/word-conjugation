@@ -51,7 +51,16 @@ export function PromoPanels({ language }: PromoPanelsProps) {
 
       <article className="resource-card resource-card--tip">
         <h3>☼ {copy.tip}</h3>
-        <p>{copy.tipText}</p>
+        {language === "en" ? (
+          <p>
+            {copy.tipText}{" "}
+            <a href="https://tunapp.com" target="_blank" rel="noopener noreferrer">
+              Tun Online Armenian School
+            </a>
+          </p>
+        ) : (
+          <p>{copy.tipText}</p>
+        )}
       </article>
     </section>
   );
