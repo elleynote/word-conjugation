@@ -54,6 +54,7 @@ const sirelVerb = {
   id: "hyw-2661",
   aliases: ["սիրել", "sirel", "love"],
   verb_translations: [
+    { language_code: "en", value: "be fond of", is_primary: false },
     { language_code: "en", value: "love", is_primary: true },
     { language_code: "en", value: "like", is_primary: false },
   ],
@@ -85,6 +86,7 @@ describe("strict verified verb search", () => {
     const verb = await findVerifiedVerb("love", "western");
     expect(verb?.id).toBe("hyw-2661");
     expect(verb?.dialects.western?.lemma).toBe("սիրել");
+    expect(verb?.english[0]).toBe("love");
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
