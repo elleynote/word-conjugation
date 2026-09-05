@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { verbs } from "@/data/verbs";
 import { conjugateVerb } from "@/lib/conjugation/conjugate";
 import { backspaceAtSelection, insertAtSelection } from "@/lib/keyboard/insertAtSelection";
-import { searchVerbs } from "@/lib/search/searchVerbs";
+import { findExactVerb } from "@/lib/search/searchVerbs";
 import { copyFor } from "@/lib/i18n/copy";
 import { applyLegacyDisplayOptions } from "@/lib/options/applyLegacyDisplayOptions";
 import { RECENT_VERBS_STORAGE_KEY, pushRecentVerb, type RecentVerbEntry } from "@/lib/recent/recentVerbs";
@@ -119,10 +119,10 @@ export function VerbExplorer() {
         return;
       }
     } catch (error) {
-      console.error("Server verb search failed; trying local fallback.", error);
+      console.error("Server verb search failed; trying exact local fallback.", error);
     }
 
-    const local = searchVerbs(cleanQuery, targetDialect)[0];
+    const local = findExactVerb(cleanQuery, targetDialect);
     if (local) {
       selectVerb({ ...local, source: "local", verified: true }, targetDialect);
       return;
