@@ -63,7 +63,7 @@ const dictionary = {
     noRecentVerbs: "Your recent verbs will appear here.",
     moreArmenianTools: "More Armenian Tools",
     tip: "Tip",
-    tipText: "Use the Full Sentences tab to see conjugations in everyday sentences.",
+    tipText: "Learn verbs in context. Don’t just memorise individual conjugations, practise each form in a complete sentence to understand how Armenian verbs change naturally in everyday speech. Need help? Try 4 lessons for $1 with",
     speakerTip: "Click a speaker button to hear the pronunciation.",
     translatorPromoTitle: "Armenian Translator App",
     translatorPromoText: "Translate Eastern and Western Armenian words, phrases and sentences instantly.",
