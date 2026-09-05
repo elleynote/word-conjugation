@@ -37,6 +37,40 @@ const FOOTER_GROUPS = [
   },
 ] as const;
 
+const SOCIAL_LINKS = [
+  ["Instagram", "https://instagram.com/tun.armenian"],
+  ["TikTok", "https://www.tiktok.com/@tun.armenian"],
+  ["YouTube", "https://www.youtube.com/@TunOnlineArmenianSchool"],
+] as const;
+
+function SocialIcon({ label }: { label: (typeof SOCIAL_LINKS)[number][0] }) {
+  if (label === "Instagram") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4.2" />
+        <circle cx="17.5" cy="6.5" r="1" className={styles.iconFill} />
+      </svg>
+    );
+  }
+
+  if (label === "TikTok") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M14 3v10.2a4.2 4.2 0 1 1-3.2-4.1" />
+        <path d="M14 3c.6 2.4 2.2 4 4.7 4.5" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M21 8.2a3 3 0 0 0-2.1-2.1C17.2 5.6 12 5.6 12 5.6s-5.2 0-6.9.5A3 3 0 0 0 3 8.2 31 31 0 0 0 2.6 12 31 31 0 0 0 3 15.8a3 3 0 0 0 2.1 2.1c1.7.5 6.9.5 6.9.5s5.2 0 6.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8Z" />
+      <path d="m10 9 5 3-5 3Z" className={styles.iconFill} />
+    </svg>
+  );
+}
+
 export function Footer() {
   return (
     <footer className={styles.root}>
@@ -68,13 +102,29 @@ export function Footer() {
                   </li>
                 ))}
               </ul>
+
+              {group.title === "Company" ? (
+                <div className={styles.socialLinks} aria-label="Social media">
+                  {SOCIAL_LINKS.map(([label, href]) => (
+                    <a
+                      key={href}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className={styles.socialLink}
+                    >
+                      <SocialIcon label={label} />
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </nav>
           ))}
         </div>
 
         <p className={styles.copyright}>
-          Copyright © {new Date().getFullYear()}. All rights reserved. For every
-          Armenian who loves their home.
+          Copyright © 2026, Tun Online Armenian School. All rights reserved. For every Armenian who loves their home.
         </p>
       </div>
     </footer>
