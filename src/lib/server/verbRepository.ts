@@ -130,11 +130,13 @@ function verbFromRows(
     dialects[dialectRow.dialect] = dialectDataFromRow(dialectRow, overrides);
   }
 
+  const orderedTranslations = [...translations].sort((a, b) => Number(b.is_primary) - Number(a.is_primary));
+
   return {
     id: row.id,
     aliases: row.aliases ?? [],
-    english: translations.filter((item) => item.language_code === "en").map((item) => item.value),
-    russian: translations.filter((item) => item.language_code === "ru").map((item) => item.value),
+    english: orderedTranslations.filter((item) => item.language_code === "en").map((item) => item.value),
+    russian: orderedTranslations.filter((item) => item.language_code === "ru").map((item) => item.value),
     dialects,
     source: "supabase",
     verified: true,
