@@ -24,6 +24,12 @@ const footerLinks = [
   ["Contact Us", "mailto:hello@tunapp.com"],
 ] as const;
 
+const socialLinks = [
+  ["Instagram", "https://instagram.com/tun.armenian"],
+  ["TikTok", "https://www.tiktok.com/@tun.armenian"],
+  ["YouTube", "https://www.youtube.com/@TunOnlineArmenianSchool"],
+] as const;
+
 describe("Footer link directory", () => {
   it("renders the Learn, Account and Company groups", () => {
     const html = renderToStaticMarkup(<Footer />);
@@ -49,10 +55,24 @@ describe("Footer link directory", () => {
     }
   });
 
-  it("keeps the existing artwork and copyright message", () => {
+  it("renders the three requested social links below the Company menu", () => {
+    const html = renderToStaticMarkup(<Footer />);
+
+    for (const [label, href] of socialLinks) {
+      const escapedHref = href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const anchor = html.match(new RegExp(`<a[^>]*href=\"${escapedHref}\"[^>]*>`))?.[0] ?? "";
+      expect(anchor).toContain(`aria-label="${label}"`);
+      expect(anchor).toContain('target="_blank"');
+      expect(anchor).toContain('rel="noopener noreferrer"');
+    }
+  });
+
+  it("keeps the existing artwork and renders the exact 2026 copyright text", () => {
     const html = renderToStaticMarkup(<Footer />);
 
     expect(html).toContain("Tun-Footer-Translate__.png");
-    expect(html).toContain("For every Armenian who loves their home.");
+    expect(html).toContain(
+      "Copyright © 2026, Tun Online Armenian School. All rights reserved. For every Armenian who loves their home.",
+    );
   });
 });
