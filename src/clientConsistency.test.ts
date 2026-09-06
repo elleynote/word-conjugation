@@ -17,11 +17,11 @@ describe("translator ecosystem consistency", () => {
     expect(brand.colors.border).toBe("#E8E5E2");
   });
 
-  it("loads the same translator fonts and TUN favicon", () => {
+  it("loads the same translator fonts and local TUN favicon", () => {
     const layout = read("./app/layout.tsx");
     expect(layout).toContain("Nunito:wght@400;500;600;700;800");
     expect(layout).toContain("Noto+Sans+Armenian:wght@400;500;600;700");
-    expect(layout).toContain("cropped-Tun_Site-Icon-180x180.png");
+    expect(layout).toContain('const tunFavicon = "/favicon-32.png";');
   });
 
   it("shows pronunciation controls only for Armenian text", () => {
