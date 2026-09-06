@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { brand } from "@/config/brand";
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
+const referenceFaviconUrl =
+  "https://raw.githubusercontent.com/elleynote/Western-Armenian-Translator/main/public/favicon-32.png";
 
 describe("translator ecosystem consistency", () => {
   it("uses the translator typography and light-theme tokens", () => {
@@ -17,11 +19,11 @@ describe("translator ecosystem consistency", () => {
     expect(brand.colors.border).toBe("#E8E5E2");
   });
 
-  it("loads the same translator fonts and local TUN favicon", () => {
+  it("loads the same translator fonts and TUN favicon", () => {
     const layout = read("./app/layout.tsx");
     expect(layout).toContain("Nunito:wght@400;500;600;700;800");
     expect(layout).toContain("Noto+Sans+Armenian:wght@400;500;600;700");
-    expect(layout).toContain('const tunFavicon = "/favicon-32.png";');
+    expect(layout).toContain(referenceFaviconUrl);
   });
 
   it("shows pronunciation controls only for Armenian text", () => {
