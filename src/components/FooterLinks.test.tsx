@@ -34,9 +34,9 @@ describe("Footer link directory", () => {
   it("renders the Learn, Account and Company groups", () => {
     const html = renderToStaticMarkup(<Footer />);
 
-    expect(html).toContain(">Learn</h3>");
-    expect(html).toContain(">Account</h3>");
-    expect(html).toContain(">Company</h3>");
+    expect(html).toContain(">Learn</h2>");
+    expect(html).toContain(">Account</h2>");
+    expect(html).toContain(">Company</h2>");
 
     for (const [label, href] of footerLinks) {
       expect(html).toContain(`href=\"${href}\"`);
@@ -67,10 +67,10 @@ describe("Footer link directory", () => {
     }
   });
 
-  it("keeps the existing artwork and renders the exact 2026 copyright text", () => {
+  it("keeps the translator artwork route and exact 2026 copyright text", () => {
     const html = renderToStaticMarkup(<Footer />);
 
-    expect(html).toContain("Tun-Footer-Translate__.png");
+    expect(html).toContain('src="/tun-footer-translate.png"');
     expect(html).toContain(
       "Copyright © 2026, Tun Online Armenian School. All rights reserved. For every Armenian who loves their home.",
     );
