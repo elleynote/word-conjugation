@@ -85,10 +85,12 @@ describe("Footer link directory", () => {
     expect(html).not.toContain('name="FNAME"');
   });
 
-  it("keeps the existing artwork and renders the exact 2026 copyright text", () => {
+  it("keeps the existing landscape artwork, loads it eagerly, and renders the exact 2026 copyright text", () => {
     const html = renderToStaticMarkup(<Footer />);
 
     expect(html).toContain("Tun-Footer-Translate__.png");
+    const artwork = html.match(/<img[^>]*Tun-Footer-Translate__\.png[^>]*>/)?.[0] ?? "";
+    expect(artwork).toContain('loading="eager"');
     expect(html).toContain(
       "Copyright © 2026, Tun Online Armenian School. All rights reserved. For every Armenian who loves their home.",
     );
