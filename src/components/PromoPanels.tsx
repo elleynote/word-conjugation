@@ -6,7 +6,8 @@ interface PromoPanelsProps {
   language: InterfaceLanguage;
 }
 
-const tunFavicon = "/favicon-32.png";
+const tunFavicon =
+  "https://raw.githubusercontent.com/elleynote/Western-Armenian-Translator/main/public/favicon-32.png";
 
 export function PromoPanels({ language }: PromoPanelsProps) {
   const copy = copyFor(language);
