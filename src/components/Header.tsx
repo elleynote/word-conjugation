@@ -5,8 +5,7 @@ import { useState } from "react";
 import type { InterfaceLanguage } from "@/types/verb";
 import { LanguageToggle } from "./LanguageToggle";
 
-const TUN_LOGO_URL =
-  "https://tunapp.com/wp-content/uploads/2020/09/Tun-Logo_Web-Black_80.png";
+const TUN_LOGO_URL = "/tun-logo.png";
 
 const NAV_ITEMS = [
   { label: "Lessons", href: "https://tunapp.com/get-started" },
