@@ -119,6 +119,85 @@
   stroke: none;
 }
 
+.signupForm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 360px);
+  margin-top: 20px;
+}
+
+.signupInput,
+.signupButton {
+  min-height: 42px;
+  border-radius: 999px;
+  font: inherit;
+}
+
+.signupInput {
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  outline: none;
+  background: #ffffff;
+  color: #1f1f1f;
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.signupInput::placeholder {
+  color: #8a817b;
+  opacity: 1;
+}
+
+.signupInput:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 20%, transparent);
+}
+
+.signupButton {
+  flex: 0 0 auto;
+  padding: 0 16px;
+  border: 1px solid var(--brand-primary);
+  background: var(--brand-primary);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.signupButton:hover,
+.signupButton:focus-visible {
+  background: var(--brand-primary-dark);
+  border-color: var(--brand-primary-dark);
+}
+
+.signupButton:active {
+  transform: translateY(1px);
+}
+
+.honeypot {
+  position: absolute;
+  left: -5000px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .copyright {
   width: min(100%, 980px);
   margin: 42px auto 0;
@@ -186,9 +265,26 @@
     margin-top: 16px;
   }
 
+  .signupForm {
+    width: min(100%, 390px);
+    margin-top: 18px;
+  }
+
   .copyright {
     margin-top: 34px;
     padding-top: 16px;
     font-size: 11px;
+  }
+}
+
+@media (max-width: 420px) {
+  .signupForm {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .signupInput,
+  .signupButton {
+    width: 100%;
   }
 }
