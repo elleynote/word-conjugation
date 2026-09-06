@@ -10,7 +10,8 @@ import "./translator-navbar.css";
 import "./top-promo-bar.css";
 import "./search-attention.css";
 
-const tunFavicon = "/favicon-32.png";
+const tunFavicon =
+  "https://raw.githubusercontent.com/elleynote/Western-Armenian-Translator/main/public/favicon-32.png";
 const siteUrl = "https://armenianverbs.com";
 const googleAnalyticsId = "G-DM9L8F8TZ2";
 
