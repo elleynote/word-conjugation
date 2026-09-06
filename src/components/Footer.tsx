@@ -125,7 +125,7 @@ export function Footer() {
             className={`${styles.artwork} tunapp-footer-artwork`}
             src="https://tunapp.com/wp-content/uploads/2026/09/Tun-Footer-Translate__.png"
             alt=""
-            loading="lazy"
+            loading="eager"
           />
         </div>
       </div>
