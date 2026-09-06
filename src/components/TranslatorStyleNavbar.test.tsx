@@ -12,10 +12,10 @@ const links = [
 ] as const;
 
 describe("conjugator translator-style navbar", () => {
-  it("renders the TUN logo and requested navigation without auth links", () => {
+  it("renders the local TUN logo and requested navigation without auth links", () => {
     const html = renderToStaticMarkup(<VerbExplorer />);
 
-    expect(html).toContain("Tun-Logo_Web-Black_80.png");
+    expect(html).toContain('src="/tun-logo.png"');
 
     for (const [label, href] of links) {
       expect(html).toContain(`href=\"${href}\"`);
