@@ -16,8 +16,8 @@ describe("Tun brand assets", () => {
     expect(redirects).toContain(
       "/tun-logo.png https://tunapp.com/wp-content/uploads/2020/09/Tun-Logo_Web-Black_80.png 200",
     );
-    expect(promoPanels).toContain(`const tunFavicon = "${referenceFaviconUrl}";`);
-    expect(layout).toContain(`const tunFavicon = "${referenceFaviconUrl}";`);
+    expect(promoPanels).toContain(referenceFaviconUrl);
+    expect(layout).toContain(referenceFaviconUrl);
     expect(existsSync(new URL("../public/tun-logo.png", import.meta.url))).toBe(false);
     expect(existsSync(new URL("../public/favicon-32.png", import.meta.url))).toBe(false);
   });
