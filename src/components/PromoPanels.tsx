@@ -6,7 +6,7 @@ interface PromoPanelsProps {
   language: InterfaceLanguage;
 }
 
-const tunFavicon = "https://tunapp.com/wp-content/uploads/2020/09/cropped-Tun_Site-Icon-180x180.png";
+const tunFavicon = "/favicon-32.png";
 
 export function PromoPanels({ language }: PromoPanelsProps) {
   const copy = copyFor(language);
