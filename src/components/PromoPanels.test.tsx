@@ -2,11 +2,14 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { PromoPanels } from "./PromoPanels";
 
+const referenceFaviconUrl =
+  "https://raw.githubusercontent.com/elleynote/Western-Armenian-Translator/main/public/favicon-32.png";
+
 describe("PromoPanels", () => {
-  it("renders the Armenian Translator promo with the local TUN favicon and requested English copy", () => {
+  it("renders the Armenian Translator promo with the TUN favicon and requested English copy", () => {
     const html = renderToStaticMarkup(<PromoPanels language="en" />);
 
-    expect(html).toContain('/favicon-32.png');
+    expect(html).toContain(referenceFaviconUrl);
     expect(html).toContain("Armenian Translator App");
     expect(html).toContain("Translate Eastern and Western Armenian words, phrases and sentences instantly.");
     expect(html).toContain("Eastern and Western Armenian");
@@ -20,7 +23,7 @@ describe("PromoPanels", () => {
 
   it("renders the Tun school promo with the same favicon heading treatment and requested copy", () => {
     const html = renderToStaticMarkup(<PromoPanels language="en" />);
-    const faviconImages = html.match(/<img[^>]+src="\/favicon-32\.png"[^>]*>/g) ?? [];
+    const faviconImages = html.match(/<img[^>]+src="https:\/\/raw\.githubusercontent\.com\/elleynote\/Western-Armenian-Translator\/main\/public\/favicon-32\.png"[^>]*>/g) ?? [];
 
     expect(faviconImages).toHaveLength(2);
     expect(html).toContain("Tun Online Armenian School");
