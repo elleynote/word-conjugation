@@ -10,7 +10,7 @@ import "./translator-navbar.css";
 import "./top-promo-bar.css";
 import "./search-attention.css";
 
-const tunFavicon = "https://tunapp.com/wp-content/uploads/2020/09/cropped-Tun_Site-Icon-180x180.png";
+const tunFavicon = "/favicon-32.png";
 const siteUrl = "https://armenianverbs.com";
 const googleAnalyticsId = "G-DM9L8F8TZ2";
 
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: tunFavicon, sizes: "180x180", type: "image/png" }],
-    apple: [{ url: tunFavicon, sizes: "180x180", type: "image/png" }],
+    icon: [{ url: tunFavicon, sizes: "32x32", type: "image/png" }],
+    apple: [{ url: tunFavicon, sizes: "32x32", type: "image/png" }],
   },
 };
 
@@ -48,7 +48,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://tunapp.com" />
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Noto+Sans+Armenian:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body style={brandStyles}>
