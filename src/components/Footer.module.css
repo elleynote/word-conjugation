@@ -35,78 +35,76 @@
 .footerBar {
   position: relative;
   z-index: 2;
-  padding: 48px 24px 22px;
   background: #1f1f1f;
   color: #aaa19b;
 }
 
-.footerDirectory {
-  width: min(100%, 980px);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr;
-  gap: 56px;
+.footerContent {
+  width: min(1180px, calc(100% - 48px));
+  margin-inline: auto;
+  padding: 42px 0 22px;
 }
 
-.footerGroup h3 {
-  margin: 0 0 16px;
-  color: #f5f5f5;
+.footerLinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 48px;
+}
+
+.footerColumn {
+  min-width: 0;
+}
+
+.footerHeading {
+  margin: 0 0 14px;
+  color: #ffffff;
   font-size: 14px;
   line-height: 1.3;
   font-weight: 800;
 }
 
-.footerGroup ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.footerColumn > div {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
-.footerGroup a {
+.footerLink {
+  width: fit-content;
   color: #aaa19b;
   font-size: 13px;
   line-height: 1.45;
-  font-weight: 600;
   text-decoration: none;
-  transition: color 160ms ease;
+  transition: color 140ms ease;
 }
 
-.footerGroup a:hover,
-.footerGroup a:focus-visible {
+.footerLink:hover {
   color: #ffffff;
 }
 
 .socialLinks {
-  display: flex;
+  display: flex !important;
   align-items: center;
-  gap: 10px;
+  gap: 12px !important;
   margin-top: 18px;
 }
 
 .socialLink {
-  display: inline-flex;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 50%;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
   color: #aaa19b;
-  transition: color 160ms ease, border-color 160ms ease, background 160ms ease;
+  text-decoration: none;
+  transition: color 140ms ease;
 }
 
-.socialLink:hover,
-.socialLink:focus-visible {
+.socialLink:hover {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .socialLink svg {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -114,31 +112,123 @@
   stroke-linejoin: round;
 }
 
-.socialLink .iconFill {
+.socialLink svg path {
   fill: currentColor;
   stroke: none;
 }
 
+.newsletter {
+  display: block !important;
+  width: 100%;
+  max-width: 360px;
+  margin-top: 22px;
+}
+
+.newsletterForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+}
+
+.newsletterLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.newsletterEmail {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  outline: none;
+  background: #ffffff;
+  color: #1f1f1f;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.newsletterEmail::placeholder {
+  color: #8d8d8d;
+  opacity: 1;
+}
+
+.newsletterEmail:focus {
+  border-color: #0797d3;
+  box-shadow: 0 0 0 3px rgba(7, 151, 211, 0.16);
+}
+
+.newsletterButton {
+  display: inline-flex;
+  min-width: 138px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #0797d3;
+  color: #ffffff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.newsletterButton:hover,
+.newsletterButton:focus-visible {
+  background: #087fb3;
+}
+
+.newsletterButton:active {
+  transform: translateY(1px);
+}
+
+.newsletterHoneypot {
+  position: absolute !important;
+  left: -5000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
 .copyright {
-  width: min(100%, 980px);
-  margin: 42px auto 0;
+  margin: 34px 0 0;
   padding-top: 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #7f7772;
-  text-align: center;
+  color: #aaa19b;
   font-size: 12px;
   line-height: 1.5;
   font-weight: 600;
+  text-align: center;
 }
 
 @media (max-width: 900px) {
-  .footerDirectory {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 36px 44px;
+  .newsletterForm {
+    grid-template-columns: 1fr;
   }
 
-  .footerGroup:first-child {
-    grid-column: 1 / -1;
+  .newsletterButton {
+    width: 100%;
   }
 }
 
@@ -156,39 +246,62 @@
     right: -8%;
   }
 
-  .footerBar {
-    padding: 36px 22px 20px;
+  .footerContent {
+    width: min(100% - 36px, 420px);
+    padding: 34px 0 20px;
   }
 
-  .footerDirectory {
+  .footerLinks {
     grid-template-columns: 1fr;
     gap: 30px;
   }
 
-  .footerGroup:first-child {
-    grid-column: auto;
-  }
-
-  .footerGroup h3 {
+  .footerHeading {
     margin-bottom: 12px;
-    font-size: 14px;
   }
 
-  .footerGroup ul {
-    gap: 9px;
-  }
-
-  .footerGroup a {
-    font-size: 13px;
+  .footerLink {
+    font-size: 12px;
   }
 
   .socialLinks {
     margin-top: 16px;
   }
 
-  .copyright {
-    margin-top: 34px;
-    padding-top: 16px;
+  .newsletter {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+
+  .newsletterForm {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .newsletterEmail,
+  .newsletterButton {
+    height: 42px;
+  }
+
+  .newsletterButton {
+    width: auto;
+    min-width: 125px;
+    padding-inline: 14px;
     font-size: 11px;
+  }
+
+  .copyright {
+    margin-top: 30px;
+    padding-top: 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 430px) {
+  .newsletterForm {
+    grid-template-columns: 1fr;
+  }
+
+  .newsletterButton {
+    width: 100%;
   }
 }
