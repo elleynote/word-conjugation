@@ -7,12 +7,19 @@ const promoPanels = readFileSync(new URL("./components/PromoPanels.tsx", import.
 const layout = readFileSync(new URL("./app/layout.tsx", import.meta.url), "utf8");
 const redirects = readFileSync(new URL("../public/_redirects", import.meta.url), "utf8");
 
+const referenceFaviconUrl =
+  "https://raw.githubusercontent.com/elleynote/Western-Armenian-Translator/main/public/favicon-32.png";
+
 describe("Tun brand assets", () => {
-  it("uses the same local logo and favicon contract as the translator app", () => {
+  it("uses the same translator logo route, favicon asset and promo-card icon", () => {
     expect(header).toContain('const TUN_LOGO_URL = "/tun-logo.png";');
-    expect(promoPanels).toContain('const tunFavicon = "/favicon-32.png";');
-    expect(layout).toContain('const tunFavicon = "/favicon-32.png";');
-    expect(existsSync(new URL("../public/favicon-32.png", import.meta.url))).toBe(true);
+    expect(redirects).toContain(
+      "/tun-logo.png https://tunapp.com/wp-content/uploads/2020/09/Tun-Logo_Web-Black_80.png 200",
+    );
+    expect(promoPanels).toContain(`const tunFavicon = "${referenceFaviconUrl}";`);
+    expect(layout).toContain(`const tunFavicon = "${referenceFaviconUrl}";`);
+    expect(existsSync(new URL("../public/tun-logo.png", import.meta.url))).toBe(false);
+    expect(existsSync(new URL("../public/favicon-32.png", import.meta.url))).toBe(false);
   });
 
   it("uses the same translator footer artwork route and community signup", () => {
