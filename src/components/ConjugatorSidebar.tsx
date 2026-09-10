@@ -4,6 +4,7 @@ import type { RefObject } from "react";
 import type { Dialect, InterfaceLanguage, TextCaseMode, Verb } from "@/types/verb";
 import { copyFor } from "@/lib/i18n/copy";
 import type { RecentVerbEntry } from "@/lib/recent/recentVerbs";
+import { transliterateArmenian } from "@/lib/transliteration/transliterate";
 import { ArmenianKeyboard } from "./ArmenianKeyboard";
 import { DialectToggle } from "./DialectToggle";
 import { RecentVerbs } from "./RecentVerbs";
@@ -40,6 +41,7 @@ export function ConjugatorSidebar(props: ConjugatorSidebarProps) {
   const englishMeaning = props.selectedVerb?.english[0];
   const meaning = props.language === "ru" && russianMeaning ? russianMeaning : englishMeaning ?? russianMeaning ?? "";
   const regularity = data?.regularity ?? (data?.isIrregular ? (props.language === "ru" ? "Неправильный" : "Irregular") : (props.language === "ru" ? "Правильный" : "Regular"));
+  const transliteration = data ? transliterateArmenian(data.lemma, props.dialect) : "";
 
   return (
     <aside className="conjugator-sidebar">
@@ -60,7 +62,7 @@ export function ConjugatorSidebar(props: ConjugatorSidebarProps) {
             <strong>{data.lemma}</strong>
             <SpeakButton text={data.lemma} language="hy" dialect={props.dialect} ariaLabel={`Play ${data.lemma}`} />
           </div>
-          <span className="sidebar-selected-card__transliteration">{data.transliteration}</span>
+          {props.showTranscription && <span className="sidebar-selected-card__transliteration">{transliteration}</span>}
           {meaning && <div className="sidebar-selected-card__meaning"><span>{meaning}</span></div>}
           <span className="sidebar-selected-card__badge">{regularity}{data.group ? ` · ${data.group}` : ""}</span>
         </section>
@@ -76,7 +78,12 @@ export function ConjugatorSidebar(props: ConjugatorSidebarProps) {
         <span>{copy.transcription}</span>
       </label>
 
-      <RecentVerbs entries={props.recentVerbs} language={props.language} onSelect={props.onSelectRecent} />
+      <RecentVerbs
+        entries={props.recentVerbs}
+        language={props.language}
+        showTranscription={props.showTranscription}
+        onSelect={props.onSelectRecent}
+      />
 
       <ArmenianKeyboard
         language={props.language}
