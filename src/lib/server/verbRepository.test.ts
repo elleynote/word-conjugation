@@ -59,6 +59,22 @@ describe("findVerifiedVerb", () => {
     expect(verb?.verified).toBe(true);
   });
 
+  it("returns the same enriched Western metadata for every bundled write query", async () => {
+    delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+    delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    for (const query of ["գրել", "write", "krel"]) {
+      const verb = await findVerifiedVerb(query, "western");
+      expect(verb?.id).toBe("write");
+      expect(verb?.dialects.western).toMatchObject({
+        group: "E-Class",
+        regularity: "Regular",
+        regularCategory: "E-Class",
+        transitivity: "Transitive",
+      });
+    }
+  });
+
   it("loads a verified Supabase verb in no more than three REST requests", async () => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-test-key";
