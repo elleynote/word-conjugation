@@ -3,6 +3,7 @@ import { copyFor } from "@/lib/i18n/copy";
 import { applyTextCase } from "@/lib/presentation/format";
 import { buildTenseComparisonRows } from "@/lib/presentation/tenseComparison";
 import { englishSentenceFor } from "@/lib/sentences/englishSentence";
+import { transliterateArmenian } from "@/lib/transliteration/transliterate";
 import { SpeakButton } from "./SpeakButton";
 
 const personLabels: Record<InterfaceLanguage, Record<Person, string>> = {
@@ -63,6 +64,7 @@ export function TenseComparison({ verb, affirmative, negative, tense, language, 
   const rows = buildTenseComparisonRows(affirmative, negative, tense);
   const headword = verb.english[0]?.trim() ?? "";
   const sentence = (polarity: Polarity, person: Person) => headword ? englishSentenceFor(headword, tense, polarity, person) : "";
+  const pronounTransliteration = (pronoun: string) => transliterateArmenian(pronoun, affirmative.dialect);
 
   return (
     <>
@@ -80,7 +82,7 @@ export function TenseComparison({ verb, affirmative, negative, tense, language, 
               <tr key={row.person}>
                 <th scope="row">
                   <strong>{personLabels[language][row.person]}</strong>
-                  <small>{row.pronoun}</small>
+                  <small>{row.pronoun}{showTranscription ? ` · ${pronounTransliteration(row.pronoun)}` : ""}</small>
                 </th>
                 <td><FormCell form={row.affirmative} english={sentence("affirmative", row.person)} dialect={affirmative.dialect} textCase={textCase} showTranscription={showTranscription} /></td>
                 <td><FormCell form={row.negative} english={sentence("negative", row.person)} dialect={negative.dialect} textCase={textCase} showTranscription={showTranscription} /></td>
@@ -95,7 +97,7 @@ export function TenseComparison({ verb, affirmative, negative, tense, language, 
           <article className="tense-mobile-card" key={row.person}>
             <header>
               <strong>{personLabels[language][row.person]}</strong>
-              <span>{row.pronoun}</span>
+              <span>{row.pronoun}{showTranscription ? ` · ${pronounTransliteration(row.pronoun)}` : ""}</span>
             </header>
             <div className="tense-mobile-card__form is-affirmative">
               <span className="tense-mobile-card__label">{copy.affirmative}</span>
