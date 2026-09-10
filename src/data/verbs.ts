@@ -17,7 +17,8 @@ export const verbs: Verb[] = [
         imperative: { singular: "գրի՛ր", plural: "գրե՛ք" },
       },
       western: {
-        lemma: "գրել", transliteration: "krel", group: "-ել", root: "գր", class: "el", isIrregular: false,
+        lemma: "գրել", transliteration: "krel", group: "E-Class", root: "գր", class: "el", isIrregular: false,
+        regularity: "Regular", regularCategory: "E-Class", transitivity: "Transitive",
         participles: { perfect: "գրած", negative: "գրեր" },
         base: "գրել", particule: "գրելով", pastParticiple: "գրած", mediativeParticiple: "գրելով", negativeParticiple: "գրեր", imperfectNonPersonal: "գրելով", subjectParticiple: "գրող", futureParticiple: "գրելիք",
         probableFuture: { firstSingular: "պիտի գրեմ", secondSingular: "պիտի գրես", thirdSingular: "պիտի գրէ", firstPlural: "պիտի գրենք", secondPlural: "պիտի գրէք", thirdPlural: "պիտի գրեն" },
