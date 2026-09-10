@@ -1,6 +1,7 @@
 import type { Dialect, InterfaceLanguage, TextCaseMode, Verb } from "@/types/verb";
 import { getVerbSummaryMetadata } from "@/lib/metadata/metadata";
 import { applyTextCase } from "@/lib/presentation/format";
+import { transliterateArmenian } from "@/lib/transliteration/transliterate";
 import { SpeakButton } from "./SpeakButton";
 
 interface VerbSummaryProps {
@@ -20,6 +21,7 @@ export function VerbSummary({ verb, dialect, language, showTranscription, textCa
   const englishMeaning = verb.english[0];
   const meaning = language === "ru" && russianMeaning ? russianMeaning : englishMeaning ?? russianMeaning ?? "";
   const lemma = applyTextCase(data.lemma, textCase);
+  const transliteration = transliterateArmenian(data.lemma, dialect);
 
   return (
     <section className="verb-summary-card" aria-label={language === "ru" ? "Информация о глаголе" : "Verb information"}>
@@ -29,7 +31,7 @@ export function VerbSummary({ verb, dialect, language, showTranscription, textCa
           <strong className="verb-summary-card__lemma">{lemma}</strong>
           <SpeakButton text={data.lemma} language="hy" dialect={dialect} ariaLabel={`Play ${data.lemma}`} />
         </div>
-        {showTranscription && <span className="verb-summary-card__transliteration">{data.transliteration}</span>}
+        {showTranscription && <span className="verb-summary-card__transliteration">{transliteration}</span>}
         {meaning && <div className="verb-summary-card__meaning"><span>{meaning}</span></div>}
       </div>
       <dl className="verb-summary-card__facts">
