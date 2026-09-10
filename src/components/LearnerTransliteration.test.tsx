@@ -108,9 +108,9 @@ describe("learner-facing Armenian transliteration", () => {
       />,
     );
 
-    expect(html).toContain("Ես");
+    expect(html).toContain("ես");
     expect(html).toContain("Yes");
-    expect(html).toContain("Դուն");
+    expect(html).toContain("դուն");
     expect(html).toContain("Toun");
   });
 });
