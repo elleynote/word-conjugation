@@ -1,16 +1,9 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useState } from "react";
 import styles from "./Footer.module.css";
 
 export function FooterNewsletterForm() {
-  const [startedAt, setStartedAt] = useState("");
-
-  useEffect(() => {
-    setStartedAt(String(Date.now()));
-  }, []);
-
   return (
     <>
       <Script
@@ -47,8 +40,10 @@ export function FooterNewsletterForm() {
         <input
           type="hidden"
           name="_newsletter_started_at"
-          value={startedAt}
-          readOnly
+          defaultValue=""
+          ref={(node) => {
+            if (node && !node.value) node.value = String(Date.now());
+          }}
         />
         <div
           className="cf-turnstile"
