@@ -30,9 +30,6 @@ const socialLinks = [
   ["YouTube", "https://www.youtube.com/@TunOnlineArmenianSchool"],
 ] as const;
 
-const mailchimpAction =
-  "https://tunapp.us5.list-manage.com/subscribe/post?u=cf919aa58fa15934e1e2a04a0&id=3feeed30f4&f_id=00a043edf0";
-
 describe("Footer link directory", () => {
   it("renders the Learn, Account and Company groups", () => {
     const html = renderToStaticMarkup(<Footer />);
@@ -70,10 +67,10 @@ describe("Footer link directory", () => {
     }
   });
 
-  it("renders only the requested Mailchimp newsletter form below the social links", () => {
+  it("renders the protected newsletter form below the social links", () => {
     const html = renderToStaticMarkup(<Footer />);
 
-    expect(html).toContain(`action="${mailchimpAction.replaceAll("&", "&amp;")}"`);
+    expect(html).toContain('action="/api/newsletter"');
     expect(html).toContain('method="post"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('type="email"');
@@ -81,6 +78,8 @@ describe("Footer link directory", () => {
     expect(html).toContain('placeholder="Enter your email here"');
     expect(html).toContain('value="Join the community"');
     expect(html).toContain('name="b_cf919aa58fa15934e1e2a04a0_3feeed30f4"');
+    expect(html).toContain('name="_newsletter_started_at"');
+    expect(html).toContain('class="cf-turnstile"');
   });
 
   it("keeps the existing artwork and renders the exact 2026 copyright text", () => {
