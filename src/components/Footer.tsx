@@ -1,4 +1,5 @@
 import styles from "./Footer.module.css";
+import { FooterNewsletterForm } from "./FooterNewsletterForm";
 
 const FOOTER_GROUPS = [
   {
@@ -43,9 +44,6 @@ const SOCIAL_LINKS = [
   ["YouTube", "https://www.youtube.com/@TunOnlineArmenianSchool"],
 ] as const;
 
-const MAILCHIMP_ACTION =
-  "https://tunapp.us5.list-manage.com/subscribe/post?u=cf919aa58fa15934e1e2a04a0&id=3feeed30f4&f_id=00a043edf0";
-
 function SocialIcon({ label }: { label: (typeof SOCIAL_LINKS)[number][0] }) {
   if (label === "Instagram") {
     return (
@@ -71,45 +69,6 @@ function SocialIcon({ label }: { label: (typeof SOCIAL_LINKS)[number][0] }) {
       <path d="M21 8.2a3 3 0 0 0-2.1-2.1C17.2 5.6 12 5.6 12 5.6s-5.2 0-6.9.5A3 3 0 0 0 3 8.2 31 31 0 0 0 2.6 12 31 31 0 0 0 3 15.8a3 3 0 0 0 2.1 2.1c1.7.5 6.9.5 6.9.5s5.2 0 6.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .4-3.8 31 31 0 0 0-.4-3.8Z" />
       <path d="m10 9 5 3-5 3Z" className={styles.iconFill} />
     </svg>
-  );
-}
-
-function NewsletterSignup() {
-  return (
-    <form
-      className={styles.newsletterForm}
-      action={MAILCHIMP_ACTION}
-      method="post"
-      target="_blank"
-      aria-label="Join the community"
-    >
-      <label className={styles.srOnly} htmlFor="footer-newsletter-email">
-        Email address
-      </label>
-      <input
-        id="footer-newsletter-email"
-        className={styles.newsletterInput}
-        type="email"
-        name="EMAIL"
-        placeholder="Enter your email here"
-        autoComplete="email"
-        required
-      />
-      <div className={styles.honeypot} aria-hidden="true">
-        <input
-          type="text"
-          name="b_cf919aa58fa15934e1e2a04a0_3feeed30f4"
-          tabIndex={-1}
-          defaultValue=""
-        />
-      </div>
-      <input
-        className={styles.newsletterButton}
-        type="submit"
-        name="subscribe"
-        value="Join the community"
-      />
-    </form>
   );
 }
 
@@ -161,7 +120,7 @@ export function Footer() {
                       </a>
                     ))}
                   </div>
-                  <NewsletterSignup />
+                  <FooterNewsletterForm />
                 </>
               ) : null}
             </nav>
