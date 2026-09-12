@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { Footer } from "./Footer";
 
 const footerLinks = [
-  ["My Lessons", "https://tunapp.com/lessons"],
   ["Learn Armenian Online", "https://tunapp.com/get-started"],
   ["Courses, Flashcards and Workbooks", "https://tunapp.com/shop"],
   ["Armenian Social Network", "https://armeniansocialnetwork.com"],
@@ -21,6 +20,7 @@ const footerLinks = [
   ["Website Terms", "https://tunapp.com/website-terms/"],
   ["Affiliate Program", "https://tunapp.com/ambassadors/"],
   ["Blog", "https://tunapp.com/blog"],
+  ["Quizzes", "https://tunapp.com/armenian-quizzes"],
   ["Contact Us", "mailto:hello@tunapp.com"],
 ] as const;
 
@@ -45,6 +45,11 @@ describe("Footer link directory", () => {
       expect(html).toContain(`href=\"${href}\"`);
       expect(html).toContain(`>${label}</a>`);
     }
+
+    expect(html).not.toContain('href="https://tunapp.com/lessons"');
+    expect(html).not.toContain(">My Lessons</a>");
+    expect(html.indexOf(">Blog</a>")).toBeLessThan(html.indexOf(">Quizzes</a>"));
+    expect(html.indexOf(">Quizzes</a>")).toBeLessThan(html.indexOf(">Contact Us</a>"));
   });
 
   it("opens every footer link in a new tab safely", () => {
